@@ -1,38 +1,44 @@
-# Mon Studio de Diagrammes
+# Diagram Studio
 
 ## Description
-Mon Studio de Diagrammes est une application web statique permettant de créer et visualiser des diagrammes UML à l'aide de Mermaid, ainsi que de dessiner librement sur un canvas. L'application offre deux modes principaux : un mode "Code UML" pour saisir du code Mermaid et le rendre automatiquement, et un mode "Dessin Libre" pour créer des dessins manuels.
-
-Cette application est conçue comme un outil personnel pour faciliter la création de diagrammes et de schémas visuels.
+Diagram Studio est une application web statique permettant de créer et visualiser des diagrammes professionnels en utilisant trois technologies différentes : Mermaid, PlantUML, et dessin libre. C'est un outil personnel polyvalent pour concevoir des diagrammes UML, des graphiques, des cas d'usage et d'autres schémas visuels.
 
 ## Fonctionnalités
-- **Mode Code UML (Mermaid)** : Saisissez du code Mermaid dans l'éditeur de texte pour générer des diagrammes automatiquement (graphiques, flux, etc.).
-- **Mode Dessin Libre** : Utilisez la souris pour dessiner directement sur un canvas avec un sélecteur de couleur.
-- **Interface à onglets** : Basculez facilement entre les deux modes via des onglets.
-- **Rendu en temps réel** : Les diagrammes Mermaid se mettent à jour automatiquement lors de la saisie ou sur clic du bouton "Actualiser".
-- **Responsive** : L'interface s'adapte à la taille de la fenêtre.
+- **Mode Mermaid** : Créez des diagrammes interactifs avec Mermaid (graphes, organigrammes, diagrammes de flux, etc.) avec rendu en temps réel.
+- **Mode PlantUML** : Générez des diagrammes PlantUML complexes (cas d'usage, diagrammes de classes, diagrammes de séquence, etc.) via l'API en ligne.
+- **Mode Dessin Libre** : Dessinez librement sur un canvas avec la souris pour créer des schémas personnalisés.
+- **Interface à onglets** : Basculez facilement entre les trois modes.
+- **Rendu en temps réel** : Les diagrammes se mettent à jour automatiquement au fur et à mesure de la saisie (débounce 500ms).
+- **Export d'images** : Téléchargez vos diagrammes en format PNG.
+- **Sauvegarde locale** : Les codes Mermaid et PlantUML sont automatiquement sauvegardés dans localStorage.
 
 ## Technologies utilisées
 - **HTML5** : Structure de la page web.
-- **CSS3** : Mise en page et styles, avec utilisation de variables CSS pour une personnalisation facile.
-- **JavaScript** : Logique interactive, intégration de Mermaid, gestion du canvas pour le dessin.
+- **CSS3** : Mise en page responsive et styles modernes avec variables CSS.
+- **JavaScript** : Logique interactive, gestion des modes, sauvegarde localStorage, export d'images.
 - **Mermaid** : Bibliothèque JavaScript pour le rendu de diagrammes à partir de code texte.
+- **PlantUML** : Service en ligne pour générer des diagrammes UML complexes (via API externe).
+- **Pako** : Bibliothèque de compression DEFLATE pour l'encodage des diagrammes PlantUML.
 
 ## Comment utiliser
 1. Ouvrez le fichier `index.html` dans un navigateur web moderne.
-2. Utilisez les onglets pour basculer entre "Code UML (Mermaid)" et "Dessin Libre".
-3. En mode Code UML :
-   - Saisissez ou collez votre code Mermaid dans la zone de texte.
-   - Cliquez sur "Actualiser le diagramme" pour voir le rendu.
+2. Utilisez les onglets pour basculer entre **Mermaid**, **PlantUML** et **Dessin Libre**.
+3. En mode Mermaid ou PlantUML :
+   - Saisissez votre code dans la zone de texte.
+   - Le rendu se met à jour automatiquement après 500ms d'inactivité.
+   - Cliquez sur "Générer le rendu" pour un rendu immédiat.
 4. En mode Dessin Libre :
-   - Dessinez avec la souris sur le canvas.
-   - Utilisez le sélecteur de couleur pour changer la couleur du trait.
-   - Cliquez sur "Effacer le dessin" pour nettoyer le canvas.
+   - Dessinez directement sur le canvas avec la souris.
+5. Utilisez le bouton "Télécharger l'image" pour exporter votre diagramme en PNG.
+
+## Sauvegarde des données
+Vos codes Mermaid et PlantUML sont automatiquement sauvegardés dans le stockage local du navigateur (`localStorage`) et seront restaurés au prochain chargement.
 
 ## Structure des fichiers
-- `index.html` : Page principale HTML avec la structure de l'application.
-- `style.css` : Feuille de styles CSS pour l'apparence et la mise en page.
-- `script.js` : Code JavaScript pour la logique interactive et l'intégration de Mermaid.
+- `index.html` : Page principale HTML avec la structure de l'application et l'intégration des bibliothèques externes.
+- `style.css` : Feuille de styles CSS pour l'apparence, la mise en page et le thème de l'application.
+- `script.js` : Code JavaScript pour la gestion des modes, le rendu des diagrammes, l'export d'images et la sauvegarde locale.
+- `README.md` : Ce fichier, documentant le projet.
 
 ## Note sur la génération du code
 De l'intelligence artificielle a été utilisée pour générer certaines parties du code.
