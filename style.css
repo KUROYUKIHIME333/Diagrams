@@ -3,7 +3,9 @@
 	--panel: #ffffff;
 	--accent: #2c3e50;
 	--btn: #3498db;
+	--log-bg: #1e1e1e;
 }
+
 body {
 	font-family: 'Segoe UI', sans-serif;
 	margin: 0;
@@ -11,7 +13,9 @@ body {
 	flex-direction: column;
 	height: 100vh;
 	background: var(--bg);
+	overflow: hidden;
 }
+
 header {
 	background: var(--accent);
 	color: white;
@@ -20,11 +24,13 @@ header {
 	justify-content: space-between;
 	align-items: center;
 }
+
 .main-container {
 	display: flex;
 	flex: 1;
 	overflow: hidden;
 }
+
 .editor-side {
 	width: 450px;
 	display: flex;
@@ -32,10 +38,12 @@ header {
 	border-right: 1px solid #ccc;
 	background: var(--panel);
 }
+
 .tabs {
 	display: flex;
 	background: #ddd;
 }
+
 .tab-btn {
 	flex: 1;
 	padding: 12px;
@@ -44,11 +52,13 @@ header {
 	background: #ddd;
 	transition: 0.3s;
 }
+
 .tab-btn.active {
 	background: var(--panel);
 	font-weight: bold;
 	border-top: 3px solid var(--btn);
 }
+
 textarea {
 	flex: 1;
 	padding: 15px;
@@ -57,32 +67,126 @@ textarea {
 	outline: none;
 	font-size: 13px;
 	line-height: 1.5;
+	resize: none;
 }
-.preview-side {
-	flex: 1;
-	padding: 20px;
-	overflow: auto;
+
+/* Console de Logs */
+#error-log-container {
+	height: 120px;
+	background: var(--log-bg);
+	color: #ff5f56;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	background: white;
+	border-top: 1px solid #333;
 }
+#error-log-header {
+	background: #333;
+	color: #aaa;
+	padding: 4px 10px;
+	font-size: 10px;
+	font-weight: bold;
+}
+#error-log-content {
+	padding: 10px;
+	overflow-y: auto;
+	flex: 1;
+	font-family: monospace;
+	font-size: 11px;
+	white-space: pre-wrap;
+}
+
 .controls {
 	padding: 10px;
 	background: #f8f9fa;
 	border-top: 1px solid #eee;
 	display: flex;
 	gap: 10px;
-	flex-wrap: wrap;
 }
+
+/* Zone de Preview et Zoom */
+.preview-side {
+	flex: 1;
+	overflow: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background: #e0e0e0;
+	position: relative;
+}
+
+/* Panneau de zoom épuré et fixe */
+.zoom-panel {
+	position: absolute; /* Fixé par rapport au preview-side */
+	bottom: 20px;
+	right: 20px;
+	background: rgba(255, 255, 255, 0.7);
+	backdrop-filter: blur(8px); /* Effet verre dépoli */
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	padding: 6px 12px;
+	border-radius: 20px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	z-index: 1000;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	transition: opacity 0.3s;
+}
+
+.zoom-panel:hover {
+	background: rgba(255, 255, 255, 0.9);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.zoom-panel button {
+	background: none;
+	border: none;
+	color: #333;
+	font-size: 16px;
+	font-weight: bold;
+	cursor: pointer;
+	padding: 0 4px;
+	line-height: 1;
+}
+
+.zoom-panel span {
+	font-size: 11px;
+	font-family: monospace;
+	color: #666;
+	min-width: 30px;
+}
+
+.zoom-slider-container input {
+	width: 60px;
+	height: 3px;
+	cursor: pointer;
+	accent-color: var(--btn);
+	vertical-align: middle;
+}
+
 #render-container {
-	max-width: 100%;
-	margin-top: 20px;
+	margin: 0;
+	padding: 60px;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	min-width: 100%;
+	min-height: 100%;
+	transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+	transform-origin: center top;
 }
-img#plantuml-img {
-	max-width: 100%;
-	border: 1px solid #ddd;
+
+[id^='dmermaid'],
+.mermaidTooltip {
+	display: none !important;
 }
+
+img#plantuml-img,
+#mermaid-output svg {
+	background: white;
+	padding: 20px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
 .btn-primary {
 	background: var(--btn);
 	color: white;
