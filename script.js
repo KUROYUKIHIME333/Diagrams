@@ -1,6 +1,13 @@
 let currentMode = 'mermaid';
 let timeout = null;
 let currentZoom = 1;
+let translateX = 0;
+let translateY = 0;
+let isPanning = false;
+let lastPanX = 0;
+let lastPanY = 0;
+let imageWidth = 0;
+let imageHeight = 0;
 
 const codeInput = document.getElementById('code-input');
 const plantImg = document.getElementById('plantuml-img');
@@ -9,6 +16,8 @@ const canvas = document.getElementById('free-draw-canvas');
 const ctx = canvas.getContext('2d');
 const renderContainer = document.getElementById('render-container');
 const logContent = document.getElementById('error-log-content');
+const errorIndicator = document.getElementById('error-indicator');
+const logContainer = document.getElementById('error-log-container');
 
 // --- INITIALISATION & SAUVEGARDE ---
 const savedData = JSON.parse(localStorage.getItem('vibeStudio_backup')) || {};
@@ -37,7 +46,10 @@ function setMode(mode) {
 	plantImg.style.display = mode === 'plantuml' ? 'block' : 'none';
 	canvas.style.display = mode === 'draw' ? 'block' : 'none';
 
-	if (mode === 'draw') resizeCanvas();
+	if (mode === 'draw') {
+		resizeCanvas();
+		updateImageSize();
+	}
 	codeInput.value = examples[mode];
 	render();
 }
@@ -47,10 +59,20 @@ function saveToLocal() {
 	localStorage.setItem('vibeStudio_backup', JSON.stringify(examples));
 }
 
-// --- RENDU ET LOGS ---
+// --- LOGS ET CONSOLE ---
 function log(msg, isError = true) {
 	logContent.style.color = isError ? '#ff5f56' : '#4ade80';
 	logContent.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+	if (isError && logContainer.classList.contains('collapsed')) {
+		errorIndicator.classList.remove('hidden');
+	}
+}
+
+function toggleLog() {
+	logContainer.classList.toggle('collapsed');
+	if (logContainer.classList.contains('collapsed')) {
+		errorIndicator.classList.add('hidden');
+	}
 }
 
 async function render() {
@@ -67,6 +89,8 @@ async function render() {
 			mermaidDiv.innerHTML = svg;
 			document.getElementById('status').innerText = 'Mode: MERMAID (Prêt)';
 			log('Rendu Mermaid réussi', false);
+			updateImageSize();
+			resetView(); // Reset view après rendu
 		} catch (e) {
 			log('Erreur Mermaid : ' + e.message);
 		}
@@ -81,15 +105,32 @@ async function render() {
 		plantImg.onload = () => {
 			document.getElementById('status').innerText = 'Mode: PLANTUML (Prêt)';
 			log('Rendu PlantUML réussi', false);
+			updateImageSize();
+			resetView(); // Reset view après rendu
 		};
 		plantImg.onerror = () => log('Erreur de rendu PlantUML');
 	}
 }
 
-// --- GESTION DU ZOOM ---
+// --- GESTION DU ZOOM ET PAN ---
+function updateImageSize() {
+	if (currentMode === 'mermaid') {
+		const svg = mermaidDiv.querySelector('svg');
+		if (svg) {
+			imageWidth = svg.clientWidth || svg.getBoundingClientRect().width;
+			imageHeight = svg.clientHeight || svg.getBoundingClientRect().height;
+		}
+	} else if (currentMode === 'plantuml') {
+		imageWidth = plantImg.naturalWidth || plantImg.clientWidth;
+		imageHeight = plantImg.naturalHeight || plantImg.clientHeight;
+	} else if (currentMode === 'draw') {
+		imageWidth = canvas.width;
+		imageHeight = canvas.height;
+	}
+}
 function updateZoom(val) {
 	currentZoom = parseFloat(val);
-	renderContainer.style.transform = `scale(${currentZoom})`;
+	applyTransform();
 	document.getElementById('zoom-value').innerText = Math.round(currentZoom * 100) + '%';
 	document.getElementById('zoom-slider').value = currentZoom;
 }
@@ -99,17 +140,74 @@ function changeZoom(delta) {
 	updateZoom(newZoom);
 }
 
-// Zoom molette (Ctrl + Scroll)
-document.getElementById('preview-side').addEventListener(
-	'wheel',
-	(e) => {
-		if (e.ctrlKey) {
-			e.preventDefault();
-			changeZoom(e.deltaY > 0 ? -0.1 : 0.1);
-		}
-	},
-	{ passive: false }
-);
+function resetView() {
+	currentZoom = 1;
+	translateX = 0;
+	translateY = 0;
+	applyTransform();
+	document.getElementById('zoom-value').innerText = '100%';
+	document.getElementById('zoom-slider').value = 1;
+}
+
+function applyTransform() {
+	renderContainer.style.transform = `translate(-50%, -50%) scale(${currentZoom}) translate(${translateX}px, ${translateY}px)`;
+}
+
+// Gestion du pan (déplacement)
+const scene = document.getElementById('scene');
+
+scene.addEventListener('mousedown', startPan);
+scene.addEventListener('mousemove', pan);
+scene.addEventListener('mouseup', endPan);
+scene.addEventListener('mouseleave', endPan);
+
+// Support tactile pour mobile
+scene.addEventListener('touchstart', startPan, { passive: false });
+scene.addEventListener('touchmove', pan, { passive: false });
+scene.addEventListener('touchend', endPan);
+
+function startPan(e) {
+	if (currentZoom <= 1) return; // Pas de pan si pas zoomé
+	e.preventDefault();
+	isPanning = true;
+	lastPanX = e.clientX || e.touches[0].clientX;
+	lastPanY = e.clientY || e.touches[0].clientY;
+}
+
+function pan(e) {
+	if (!isPanning) return;
+	e.preventDefault();
+	const clientX = e.clientX || e.touches[0].clientX;
+	const clientY = e.clientY || e.touches[0].clientY;
+	const deltaX = clientX - lastPanX;
+	const deltaY = clientY - lastPanY;
+	translateX += deltaX / currentZoom;
+	translateY += deltaY / currentZoom;
+
+	// Limiter le pan dynamiquement basé sur la taille de l'image
+	const sceneRect = scene.getBoundingClientRect();
+	const maxX = Math.max(0, (imageWidth * currentZoom - sceneRect.width) / 2 / currentZoom);
+	const maxY = Math.max(0, (imageHeight * currentZoom - sceneRect.height) / 2 / currentZoom);
+	translateX = Math.max(-maxX, Math.min(maxX, translateX));
+	translateY = Math.max(-maxY, Math.min(maxY, translateY));
+
+	lastPanX = clientX;
+	lastPanY = clientY;
+	applyTransform();
+}
+
+function endPan() {
+	isPanning = false;
+}
+
+// Zoom molette (Ctrl + Scroll) - sensibilité ajustée
+scene.addEventListener('wheel', (e) => {
+	if (e.ctrlKey) {
+		e.preventDefault();
+		const delta = e.deltaY > 0 ? -0.05 : 0.05; // Moins sensible
+		changeZoom(delta);
+	}
+}, { passive: false });
 
 // --- TÉLÉCHARGEMENT ---
 function downloadImage() {
