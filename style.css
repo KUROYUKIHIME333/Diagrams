@@ -1,0 +1,122 @@
+:root {
+	--bg: #f5f6fa;
+	--panel: #ffffff;
+	--accent: #4a90e2;
+	--text: #2f3640;
+}
+
+body {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	background-color: var(--bg);
+	color: var(--text);
+}
+
+header {
+	background-color: var(--accent);
+	color: white;
+	padding: 1rem;
+	text-align: center;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.main-container {
+	display: flex;
+	flex: 1;
+	overflow: hidden;
+}
+
+/* Panneau de gauche : Éditeur */
+.editor-side {
+	width: 40%;
+	display: flex;
+	flex-direction: column;
+	border-right: 2px solid #ddd;
+	background: var(--panel);
+}
+
+.tabs {
+	display: flex;
+	background: #eee;
+}
+
+.tab-btn {
+	padding: 10px 20px;
+	border: none;
+	cursor: pointer;
+	background: #eee;
+}
+
+.tab-btn.active {
+	background: var(--panel);
+	border-bottom: 2px solid var(--accent);
+	font-weight: bold;
+}
+
+textarea {
+	flex: 1;
+	padding: 15px;
+	font-family: 'Courier New', Courier, monospace;
+	border: none;
+	outline: none;
+	resize: none;
+	font-size: 14px;
+}
+
+/* Panneau de droite : Rendu */
+.preview-side {
+	flex: 1;
+	padding: 20px;
+	overflow: auto;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	position: relative;
+}
+
+#mermaid-render {
+	width: 100%;
+}
+
+#free-draw-canvas {
+	border: 1px dashed #ccc;
+	background: white;
+	cursor: crosshair;
+	display: none;
+}
+
+.controls {
+	padding: 10px;
+	background: #f1f1f1;
+	display: flex;
+	gap: 10px;
+}
+
+button {
+	padding: 8px 15px;
+	cursor: pointer;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	background: white;
+}
+button:hover {
+	background: #e9e9e9;
+}
+button:active {
+	background: #ddd;
+}
+button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+button.selected {
+	background: var(--accent);
+	color: white;
+	border-color: var(--accent);
+}
+button.selected:hover {
+	background: #3a78c2;
+}
