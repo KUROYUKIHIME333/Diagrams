@@ -1,5 +1,5 @@
 let currentMode = 'mermaid';
-let timeout = null; // Pour le rendu automatique (debounce)
+let timeout = null;
 const codeInput = document.getElementById('code-input');
 const plantImg = document.getElementById('plantuml-img');
 const mermaidDiv = document.getElementById('mermaid-output');
