@@ -114,39 +114,67 @@ textarea {
 	position: relative;
 }
 
+/* Panneau de zoom épuré et fixe */
 .zoom-panel {
-	position: absolute;
+	position: absolute; /* Fixé par rapport au preview-side */
 	bottom: 20px;
 	right: 20px;
-	background: rgba(44, 62, 80, 0.9);
-	padding: 8px 15px;
-	border-radius: 30px;
+	background: rgba(255, 255, 255, 0.7);
+	backdrop-filter: blur(8px); /* Effet verre dépoli */
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	padding: 6px 12px;
+	border-radius: 20px;
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	color: white;
+	gap: 8px;
 	z-index: 1000;
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+	transition: opacity 0.3s;
 }
+
+.zoom-panel:hover {
+	background: rgba(255, 255, 255, 0.9);
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
 .zoom-panel button {
 	background: none;
 	border: none;
-	color: white;
+	color: #333;
+	font-size: 16px;
+	font-weight: bold;
 	cursor: pointer;
-	font-size: 18px;
+	padding: 0 4px;
+	line-height: 1;
 }
-.zoom-panel input {
-	accent-color: var(--btn);
+
+.zoom-panel span {
+	font-size: 11px;
+	font-family: monospace;
+	color: #666;
+	min-width: 30px;
+}
+
+.zoom-slider-container input {
+	width: 60px;
+	height: 3px;
 	cursor: pointer;
+	accent-color: var(--btn);
+	vertical-align: middle;
 }
 
 #render-container {
-	margin: 50px;
-	transition: transform 0.1s ease-out;
-	transform-origin: top center;
+	margin: 0;
+	padding: 60px;
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	min-width: 100%;
+	min-height: 100%;
+	transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+	transform-origin: center top;
 }
 
-/* Nettoyage des erreurs Mermaid sauvages */
 [id^='dmermaid'],
 .mermaidTooltip {
 	display: none !important;
