@@ -23,7 +23,7 @@ mermaid.initialize({ startOnLoad: false });
 codeInput.addEventListener('input', () => {
 	document.getElementById('status').innerText = 'En cours...';
 	clearTimeout(timeout);
-	timeout = setTimeout(render, 500); // 500ms après la fin de la frappe
+	timeout = setTimeout(render, 200); // 200ms après la fin de la frappe
 });
 
 function setMode(mode) {
