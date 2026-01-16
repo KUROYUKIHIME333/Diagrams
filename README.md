@@ -4,13 +4,10 @@
 Diagram Studio est une application web statique permettant de créer et visualiser des diagrammes professionnels en utilisant trois technologies différentes : Mermaid, PlantUML, et dessin libre. C'est un outil personnel polyvalent pour concevoir des diagrammes UML, des graphiques, des cas d'usage et d'autres schémas visuels.
 
 ## Fonctionnalités
-- **Mode Mermaid** : Créez des diagrammes interactifs avec Mermaid (graphes, organigrammes, diagrammes de flux, etc.) avec rendu en temps réel.
-- **Mode PlantUML** : Générez des diagrammes PlantUML complexes (cas d'usage, diagrammes de classes, diagrammes de séquence, etc.) via l'API en ligne.
-- **Mode Dessin Libre** : Dessinez librement sur un canvas avec la souris pour créer des schémas personnalisés.
-- **Interface à onglets** : Basculez facilement entre les trois modes.
-- **Rendu en temps réel** : Les diagrammes se mettent à jour automatiquement au fur et à mesure de la saisie (débounce 500ms).
-- **Export d'images** : Téléchargez vos diagrammes en format PNG.
-- **Sauvegarde locale** : Les codes Mermaid et PlantUML sont automatiquement sauvegardés dans localStorage.
+- **Zoom et Pan** : Zoomez avec Ctrl+molette (sensibilité ajustée) ou boutons. Panner en cliquant-glissant quand zoomé (>100%). La scène permet de se déplacer sur toute l'image sans perdre de parties. Bouton Reset pour revenir au centre.
+- **Console d'erreurs cachable** : La console peut être réduite ; un indicateur apparaît en cas d'erreur.
+- **Responsive** : Interface adaptée pour mobile et tablette, avec layout vertical sur petits écrans.
+- **Rendu automatique** : Les diagrammes se mettent à jour automatiquement au fur et à mesure de la saisie (débounce 300ms).
 
 ## Technologies utilisées
 - **HTML5** : Structure de la page web.

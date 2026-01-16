@@ -22,33 +22,39 @@
 					<button class="tab-btn" onclick="setMode('draw')">Dessin Libre</button>
 				</div>
 
-				<textarea id="code-input" spellcheck="false"></textarea>
+				<textarea id="code-input" spellcheck="false" placeholder="Saisissez votre code ici..."></textarea>
 
-				<div id="error-log-container">
-					<div id="error-log-header">Console & Erreurs</div>
-					<div id="error-log-content">Prêt...</div>
+				<div id="error-log-container" class="collapsible">
+					<div id="error-log-header" onclick="toggleLog()">
+						<span>Console & Erreurs</span>
+						<span id="error-indicator" class="indicator hidden">!</span>
+						<span class="toggle-icon">▼</span>
+					</div>
+					<div id="error-log-content" class="content">Prêt...</div>
 				</div>
 
 				<div class="controls">
-					<button class="btn-primary" onclick="render()">Générer le rendu</button>
-					<button class="btn-download" onclick="downloadImage()">Télécharger l'image</button>
+					<button class="btn-download" onclick="downloadImage()">Télécharger</button>
 				</div>
 			</div>
 
 			<div class="preview-side" id="preview-side">
 				<div class="zoom-panel">
-					<button onclick="changeZoom(-0.1)">−</button>
+					<button onclick="changeZoom(-0.1)" title="Zoom arrière">−</button>
 					<div class="zoom-slider-container">
 						<input type="range" id="zoom-slider" min="0.2" max="3" step="0.1" value="1" oninput="updateZoom(this.value)" />
 					</div>
-					<button onclick="changeZoom(0.1)">+</button>
+					<button onclick="changeZoom(0.1)" title="Zoom avant">+</button>
 					<span id="zoom-value">100%</span>
+					<button onclick="resetView()" title="Réinitialiser la vue">Reset</button>
 				</div>
 
-				<div id="render-container">
-					<div id="mermaid-output" class="mermaid"></div>
-					<img id="plantuml-img" style="display: none" />
-					<canvas id="free-draw-canvas" style="display: none; border: 1px solid #000"></canvas>
+				<div class="scene" id="scene">
+					<div id="render-container">
+						<div id="mermaid-output" class="mermaid"></div>
+						<img id="plantuml-img" style="display: none" />
+						<canvas id="free-draw-canvas" style="display: none; border: 1px solid #000"></canvas>
+					</div>
 				</div>
 			</div>
 		</div>
