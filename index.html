@@ -3,49 +3,39 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Mon Studio de Diagrammes</title>
+		<title>Studio Multi-Diagrammes (UML, Mermaid, PlantUML)</title>
 		<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
 		<header>
-			<h1>Mon Studio UML & Dessin</h1>
+			<span><strong>Diagram Studio</strong> v2.0</span>
+			<div id="status" style="font-size: 0.8em; opacity: 0.8">Mode: Mermaid</div>
 		</header>
 
 		<div class="main-container">
 			<div class="editor-side">
 				<div class="tabs">
-					<button class="tab-btn active" onclick="switchTab('code')">Code UML (Mermaid)</button>
-					<button class="tab-btn" onclick="switchTab('draw')">Dessin Libre</button>
+					<button class="tab-btn active" onclick="setMode('mermaid')">Mermaid</button>
+					<button class="tab-btn" onclick="setMode('plantuml')">PlantUML</button>
+					<button class="tab-btn" onclick="setMode('draw')">Dessin Libre</button>
 				</div>
 
-				<div id="code-section" style="display: flex; flex-direction: column; flex: 1">
-					<textarea id="mermaid-input" placeholder="Collez votre code Mermaid ici...">
-graph TD
-    A[Utilisateur] -->|Ouvre le site| B(Éditeur)
-    B --> C{Choix du mode}
-    C -->|Code| D[Rendu automatique]
-    C -->|Dessin| E[Canvas libre]
-            </textarea
-					>
-					<div class="controls">
-						<button onclick="renderDiagram()">Actualiser le diagramme</button>
-					</div>
-				</div>
+				<textarea id="code-input" spellcheck="false"></textarea>
 
-				<div id="draw-section" style="display: none; flex-direction: column; padding: 10px">
-					<p>Utilisez votre souris pour dessiner à droite.</p>
-					<div class="controls">
-						<button onclick="clearCanvas()">Effacer le dessin</button>
-						<input type="color" id="colorPicker" value="#4a90e2" />
-					</div>
+				<div class="controls">
+					<button class="btn-primary" onclick="render()">Générer le rendu</button>
+					<button class="btn-download" onclick="downloadImage()">Télécharger l'image</button>
 				</div>
 			</div>
 
-			<div class="preview-side">
-				<div id="mermaid-render" class="mermaid"></div>
-
-				<canvas id="free-draw-canvas"></canvas>
+			<div class="preview-side" id="preview-side">
+				<div id="render-container">
+					<div id="mermaid-output" class="mermaid"></div>
+					<img id="plantuml-img" style="display: none" />
+					<canvas id="free-draw-canvas" style="display: none; border: 1px solid #000"></canvas>
+				</div>
 			</div>
 		</div>
 
