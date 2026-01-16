@@ -58,7 +58,6 @@ async function render() {
 	if (currentMode === 'mermaid') {
 		mermaidDiv.innerHTML = '';
 		try {
-			// ID unique pour les conflits de cache Mermaid
 			const { svg } = await mermaid.render('mermaid-' + Math.floor(Math.random() * 1000), code);
 			mermaidDiv.innerHTML = svg;
 			document.getElementById('status').innerText = 'Mode: MERMAID (Prêt)';
@@ -66,21 +65,68 @@ async function render() {
 			mermaidDiv.innerHTML = '<p style="color:red">Erreur de syntaxe Mermaid</p>';
 		}
 	} else if (currentMode === 'plantuml') {
-		try {
-			// Le code pour PlantUML doit être entouré de @start/@enduml
-			let cleanCode = code.trim();
-			if (!cleanCode.startsWith('@start')) {
-				cleanCode = '@startuml\n' + cleanCode + '\n@enduml';
-			}
-
-			const encoded = encodePlantUML(cleanCode);
-			plantImg.src = 'https://www.plantuml.com/plantuml/png/~1' + encoded;
-
-			plantImg.onload = () => (document.getElementById('status').innerText = 'Mode: PLANTUML (Prêt)');
-			plantImg.onerror = () => (mermaidDiv.innerHTML = 'Erreur de rendu PlantUML');
-		} catch (e) {
-			console.error(e);
+		let cleanCode = code.trim();
+		if (!cleanCode.startsWith('@start')) {
+			cleanCode = '@startuml\n' + cleanCode + '\n@enduml';
 		}
+		const encoded = encodePlantUML(cleanCode);
+
+		// On utilise crossOrigin pour éviter les problèmes de sécurité lors de la conversion en canvas
+		plantImg.crossOrigin = 'anonymous';
+		plantImg.src = 'https://www.plantuml.com/plantuml/png/~1' + encoded;
+
+		plantImg.onload = () => (document.getElementById('status').innerText = 'Mode: PLANTUML (Prêt)');
+	}
+}
+
+function downloadImage() {
+	const status = document.getElementById('status');
+	status.innerText = 'Téléchargement...';
+
+	// Nom du fichier
+	let fileName = 'mon_diagramme';
+	const titleMatch = codeInput.value.match(/title\s+(.+)/i);
+	if (titleMatch) fileName = titleMatch[1].trim().replace(/\s+/g, '_');
+	fileName += '_' + currentMode + '.png';
+
+	const canvasExp = document.createElement('canvas');
+	const ctxExp = canvasExp.getContext('2d');
+	const img = new Image();
+	img.crossOrigin = 'anonymous'; // Pour les images distantes (PlantUML)
+
+	img.onload = function () {
+		canvasExp.width = img.width;
+		canvasExp.height = img.height;
+
+		// Fond blanc pour éviter la transparence
+		ctxExp.fillStyle = 'white';
+		ctxExp.fillRect(0, 0, canvasExp.width, canvasExp.height);
+
+		ctxExp.drawImage(img, 0, 0);
+
+		// Vrai download
+		canvasExp.toBlob((blob) => {
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = fileName;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+			status.innerText = 'Enregistré !';
+		}, 'image/png');
+	};
+
+	if (currentMode === 'plantuml') {
+		img.src = plantImg.src;
+	} else if (currentMode === 'draw') {
+		img.src = canvas.toDataURL('image/png');
+	} else if (currentMode === 'mermaid') {
+		// SVG Mermaid vers PNG
+		const svgElement = mermaidDiv.querySelector('svg');
+		const svgData = new XMLSerializer().serializeToString(svgElement);
+		img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
 	}
 }
 
@@ -123,22 +169,6 @@ function resizeCanvas() {
 	canvas.height = container.clientHeight - 40;
 	ctx.strokeStyle = '#3498db';
 	ctx.lineWidth = 2;
-}
-
-function downloadImage() {
-	if (currentMode === 'plantuml') {
-		const link = document.createElement('a');
-		link.href = plantImg.src;
-		link.download = 'diagramme_plantuml.png';
-		link.click();
-	} else if (currentMode === 'draw') {
-		const link = document.createElement('a');
-		link.href = canvas.toDataURL('image/png');
-		link.download = 'dessin_libre.png';
-		link.click();
-	} else {
-		alert("Faites un clic droit sur le diagramme Mermaid -> Enregistrer l'image sous.");
-	}
 }
 
 // Dessin libre simple
