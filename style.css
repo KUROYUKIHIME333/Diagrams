@@ -3,7 +3,9 @@
 	--panel: #ffffff;
 	--accent: #2c3e50;
 	--btn: #3498db;
+	--log-bg: #1e1e1e;
 }
+
 body {
 	font-family: 'Segoe UI', sans-serif;
 	margin: 0;
@@ -11,7 +13,9 @@ body {
 	flex-direction: column;
 	height: 100vh;
 	background: var(--bg);
+	overflow: hidden;
 }
+
 header {
 	background: var(--accent);
 	color: white;
@@ -20,11 +24,13 @@ header {
 	justify-content: space-between;
 	align-items: center;
 }
+
 .main-container {
 	display: flex;
 	flex: 1;
 	overflow: hidden;
 }
+
 .editor-side {
 	width: 450px;
 	display: flex;
@@ -32,10 +38,12 @@ header {
 	border-right: 1px solid #ccc;
 	background: var(--panel);
 }
+
 .tabs {
 	display: flex;
 	background: #ddd;
 }
+
 .tab-btn {
 	flex: 1;
 	padding: 12px;
@@ -44,11 +52,13 @@ header {
 	background: #ddd;
 	transition: 0.3s;
 }
+
 .tab-btn.active {
 	background: var(--panel);
 	font-weight: bold;
 	border-top: 3px solid var(--btn);
 }
+
 textarea {
 	flex: 1;
 	padding: 15px;
@@ -57,32 +67,98 @@ textarea {
 	outline: none;
 	font-size: 13px;
 	line-height: 1.5;
+	resize: none;
 }
-.preview-side {
-	flex: 1;
-	padding: 20px;
-	overflow: auto;
+
+/* Console de Logs */
+#error-log-container {
+	height: 120px;
+	background: var(--log-bg);
+	color: #ff5f56;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	background: white;
+	border-top: 1px solid #333;
 }
+#error-log-header {
+	background: #333;
+	color: #aaa;
+	padding: 4px 10px;
+	font-size: 10px;
+	font-weight: bold;
+}
+#error-log-content {
+	padding: 10px;
+	overflow-y: auto;
+	flex: 1;
+	font-family: monospace;
+	font-size: 11px;
+	white-space: pre-wrap;
+}
+
 .controls {
 	padding: 10px;
 	background: #f8f9fa;
 	border-top: 1px solid #eee;
 	display: flex;
 	gap: 10px;
-	flex-wrap: wrap;
 }
+
+/* Zone de Preview et Zoom */
+.preview-side {
+	flex: 1;
+	overflow: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background: #e0e0e0;
+	position: relative;
+}
+
+.zoom-panel {
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	background: rgba(44, 62, 80, 0.9);
+	padding: 8px 15px;
+	border-radius: 30px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	color: white;
+	z-index: 1000;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.zoom-panel button {
+	background: none;
+	border: none;
+	color: white;
+	cursor: pointer;
+	font-size: 18px;
+}
+.zoom-panel input {
+	accent-color: var(--btn);
+	cursor: pointer;
+}
+
 #render-container {
-	max-width: 100%;
-	margin-top: 20px;
+	margin: 50px;
+	transition: transform 0.1s ease-out;
+	transform-origin: top center;
 }
-img#plantuml-img {
-	max-width: 100%;
-	border: 1px solid #ddd;
+
+/* Nettoyage des erreurs Mermaid sauvages */
+[id^='dmermaid'],
+.mermaidTooltip {
+	display: none !important;
 }
+
+img#plantuml-img,
+#mermaid-output svg {
+	background: white;
+	padding: 20px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
 .btn-primary {
 	background: var(--btn);
 	color: white;

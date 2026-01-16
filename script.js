@@ -1,47 +1,43 @@
 let currentMode = 'mermaid';
 let timeout = null;
+let currentZoom = 1;
+
 const codeInput = document.getElementById('code-input');
 const plantImg = document.getElementById('plantuml-img');
 const mermaidDiv = document.getElementById('mermaid-output');
 const canvas = document.getElementById('free-draw-canvas');
 const ctx = canvas.getContext('2d');
+const renderContainer = document.getElementById('render-container');
+const logContent = document.getElementById('error-log-content');
 
-// CHARGEMENT (sauvegarde locale ou exemples)
+// --- INITIALISATION & SAUVEGARDE ---
 const savedData = JSON.parse(localStorage.getItem('vibeStudio_backup')) || {};
-
 const examples = {
 	mermaid: savedData.mermaid || 'graph TD\n  A[Début] --> B{Choix}\n  B -- Oui --> C[Succès]\n  B -- Non --> D[Erreur]',
 	plantuml: savedData.plantuml || 'usecaseDiagram\nactor "Admin" as Admin\npackage "Système" {\n  usecase "Gérer" as UC1\n}\nAdmin --> UC1',
-	draw: '// Mode dessin libre activé.\n// Utilisez la souris sur la droite.',
+	draw: '// Mode dessin libre.',
 };
 
-// Init
 codeInput.value = examples.mermaid;
-mermaid.initialize({ startOnLoad: false });
+mermaid.initialize({ startOnLoad: false, suppressErrorRendering: true });
 
-// Écouteur pour rendu temps réel
 codeInput.addEventListener('input', () => {
 	document.getElementById('status').innerText = 'En cours...';
 	clearTimeout(timeout);
-	timeout = setTimeout(render, 200); // 200ms après la fin de la frappe
+	timeout = setTimeout(render, 300);
 });
 
 function setMode(mode) {
-	// Sauvegarder le code actuel avant de changer
 	saveToLocal();
-
 	currentMode = mode;
 	document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
 	event.target.classList.add('active');
-	document.getElementById('status').innerText = 'Mode: ' + mode.toUpperCase();
 
 	mermaidDiv.style.display = mode === 'mermaid' ? 'block' : 'none';
 	plantImg.style.display = mode === 'plantuml' ? 'block' : 'none';
 	canvas.style.display = mode === 'draw' ? 'block' : 'none';
 
 	if (mode === 'draw') resizeCanvas();
-
-	// Code qui correspond au mode
 	codeInput.value = examples[mode];
 	render();
 }
@@ -51,127 +47,134 @@ function saveToLocal() {
 	localStorage.setItem('vibeStudio_backup', JSON.stringify(examples));
 }
 
+// --- RENDU ET LOGS ---
+function log(msg, isError = true) {
+	logContent.style.color = isError ? '#ff5f56' : '#4ade80';
+	logContent.innerText = `[${new Date().toLocaleTimeString()}] ${msg}`;
+}
+
 async function render() {
 	saveToLocal();
-	const code = codeInput.value;
+	const code = codeInput.value.trim();
 
 	if (currentMode === 'mermaid') {
+		// Nettoyage des erreurs Mermaid du DOM pour éviter la saturation
 		mermaidDiv.innerHTML = '';
+		document.querySelectorAll('[id^="dmermaid"]').forEach((el) => el.remove());
+
 		try {
-			const { svg } = await mermaid.render('mermaid-' + Math.floor(Math.random() * 1000), code);
+			const { svg } = await mermaid.render('m' + Math.floor(Math.random() * 1000), code);
 			mermaidDiv.innerHTML = svg;
 			document.getElementById('status').innerText = 'Mode: MERMAID (Prêt)';
+			log('Rendu Mermaid réussi', false);
 		} catch (e) {
-			mermaidDiv.innerHTML = '<p style="color:red">Erreur de syntaxe Mermaid</p>';
+			log('Erreur Mermaid : ' + e.message);
 		}
 	} else if (currentMode === 'plantuml') {
-		let cleanCode = code.trim();
-		if (!cleanCode.startsWith('@start')) {
-			cleanCode = '@startuml\n' + cleanCode + '\n@enduml';
-		}
-		const encoded = encodePlantUML(cleanCode);
+		let cleanCode = code;
+		if (!cleanCode.startsWith('@start')) cleanCode = '@startuml\n' + cleanCode + '\n@enduml';
 
-		// On utilise crossOrigin pour éviter les problèmes de sécurité lors de la conversion en canvas
+		const encoded = encodePlantUML(cleanCode);
 		plantImg.crossOrigin = 'anonymous';
 		plantImg.src = 'https://www.plantuml.com/plantuml/png/~1' + encoded;
 
-		plantImg.onload = () => (document.getElementById('status').innerText = 'Mode: PLANTUML (Prêt)');
+		plantImg.onload = () => {
+			document.getElementById('status').innerText = 'Mode: PLANTUML (Prêt)';
+			log('Rendu PlantUML réussi', false);
+		};
+		plantImg.onerror = () => log('Erreur de rendu PlantUML');
 	}
 }
 
+// --- GESTION DU ZOOM ---
+function updateZoom(val) {
+	currentZoom = parseFloat(val);
+	renderContainer.style.transform = `scale(${currentZoom})`;
+	document.getElementById('zoom-value').innerText = Math.round(currentZoom * 100) + '%';
+	document.getElementById('zoom-slider').value = currentZoom;
+}
+
+function changeZoom(delta) {
+	let newZoom = Math.min(Math.max(currentZoom + delta, 0.2), 3);
+	updateZoom(newZoom);
+}
+
+// Zoom molette (Ctrl + Scroll)
+document.getElementById('preview-side').addEventListener(
+	'wheel',
+	(e) => {
+		if (e.ctrlKey) {
+			e.preventDefault();
+			changeZoom(e.deltaY > 0 ? -0.1 : 0.1);
+		}
+	},
+	{ passive: false }
+);
+
+// --- TÉLÉCHARGEMENT ---
 function downloadImage() {
-	const status = document.getElementById('status');
-	status.innerText = 'Téléchargement...';
-
-	// Nom du fichier
-	let fileName = 'mon_diagramme';
-	const titleMatch = codeInput.value.match(/title\s+(.+)/i);
-	if (titleMatch) fileName = titleMatch[1].trim().replace(/\s+/g, '_');
-	fileName += '_' + currentMode + '.png';
-
-	const canvasExp = document.createElement('canvas');
-	const ctxExp = canvasExp.getContext('2d');
+	let fileName = (codeInput.value.match(/title\s+(.+)/i)?.[1] || 'diagramme').trim().replace(/\s+/g, '_');
 	const img = new Image();
-	img.crossOrigin = 'anonymous'; // Pour les images distantes (PlantUML)
+	img.crossOrigin = 'anonymous';
 
 	img.onload = function () {
-		canvasExp.width = img.width;
-		canvasExp.height = img.height;
-
-		// Fond blanc pour éviter la transparence
+		const c = document.createElement('canvas');
+		const ctxExp = c.getContext('2d');
+		c.width = img.width;
+		c.height = img.height;
 		ctxExp.fillStyle = 'white';
-		ctxExp.fillRect(0, 0, canvasExp.width, canvasExp.height);
-
+		ctxExp.fillRect(0, 0, c.width, c.height);
 		ctxExp.drawImage(img, 0, 0);
-
-		// Vrai download
-		canvasExp.toBlob((blob) => {
-			const url = URL.createObjectURL(blob);
+		c.toBlob((blob) => {
 			const a = document.createElement('a');
-			a.href = url;
-			a.download = fileName;
-			document.body.appendChild(a);
+			a.href = URL.createObjectURL(blob);
+			a.download = fileName + '.png';
 			a.click();
-			document.body.removeChild(a);
-			URL.revokeObjectURL(url);
-			status.innerText = 'Enregistré !';
 		}, 'image/png');
 	};
 
-	if (currentMode === 'plantuml') {
-		img.src = plantImg.src;
-	} else if (currentMode === 'draw') {
-		img.src = canvas.toDataURL('image/png');
-	} else if (currentMode === 'mermaid') {
-		// SVG Mermaid vers PNG
-		const svgElement = mermaidDiv.querySelector('svg');
-		const svgData = new XMLSerializer().serializeToString(svgElement);
+	if (currentMode === 'plantuml') img.src = plantImg.src;
+	else if (currentMode === 'draw') img.src = canvas.toDataURL('image/png');
+	else {
+		const svgData = new XMLSerializer().serializeToString(mermaidDiv.querySelector('svg'));
 		img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
 	}
 }
 
-// LOGIQUE PLANTUML
+// --- LOGIQUE PLANTUML (ENCODAGE) ---
 function encodePlantUML(s) {
 	const data = new TextEncoder().encode(s);
 	const compressed = pako.deflate(data, { level: 9 });
 	return ascii64Encode(compressed);
 }
-
 function ascii64Encode(data) {
 	let r = '';
-	for (let i = 0; i < data.length; i += 3) {
-		r += append3bytes(data[i], data[i + 1] || 0, data[i + 2] || 0);
-	}
+	for (let i = 0; i < data.length; i += 3) r += append3bytes(data[i], data[i + 1] || 0, data[i + 2] || 0);
 	return r;
 }
-
 function append3bytes(b1, b2, b3) {
-	let c1 = b1 >> 2;
-	let c2 = ((b1 & 0x3) << 4) | (b2 >> 4);
-	let c3 = ((b2 & 0xf) << 2) | (b3 >> 6);
-	let c4 = b3 & 0x3f;
+	let c1 = b1 >> 2,
+		c2 = ((b1 & 0x3) << 4) | (b2 >> 4),
+		c3 = ((b2 & 0xf) << 2) | (b3 >> 6),
+		c4 = b3 & 0x3f;
 	return encode6bit(c1 & 0x3f) + encode6bit(c2 & 0x3f) + encode6bit(c3 & 0x3f) + encode6bit(c4 & 0x3f);
 }
-
 function encode6bit(b) {
 	if (b < 10) return String.fromCharCode(48 + b);
 	if (b < 36) return String.fromCharCode(65 + b - 10);
 	if (b < 62) return String.fromCharCode(97 + b - 36);
-	if (b === 62) return '-';
-	if (b === 63) return '_';
-	return '?';
+	return b === 62 ? '-' : b === 63 ? '_' : '?';
 }
 
-// DESSIN ET EXPORT
+// --- DESSIN ---
 function resizeCanvas() {
 	const container = document.getElementById('preview-side');
-	canvas.width = container.clientWidth - 40;
-	canvas.height = container.clientHeight - 40;
+	canvas.width = 800;
+	canvas.height = 600;
 	ctx.strokeStyle = '#3498db';
 	ctx.lineWidth = 2;
+	ctx.lineCap = 'round';
 }
-
-// Dessin libre simple
 let drawing = false;
 canvas.onmousedown = () => (drawing = true);
 canvas.onmouseup = () => {
@@ -183,6 +186,8 @@ canvas.onmousemove = (e) => {
 	const rect = canvas.getBoundingClientRect();
 	ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
 	ctx.stroke();
+	ctx.beginPath();
+	ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
 };
 
 window.onload = render;
