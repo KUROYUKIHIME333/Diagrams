@@ -23,11 +23,11 @@ const logContent = document.getElementById('error-log-content');
 const errorIndicator = document.getElementById('error-indicator');
 const logContainer = document.getElementById('error-log-container');
 
-const savedData = JSON.parse(localStorage.getItem('vibeStudio_backup')) || {};
+const savedData = JSON.parse(localStorage.getItem('diagramStudio_backup')) || {};
 const examples = {
-	mermaid: savedData.mermaid || 'graph TD\n  A[Début] --> B{Choix}\n  B -- Oui --> C[Succès]\n  B -- Non --> D[Erreur]',
-	plantuml: savedData.plantuml || 'usecaseDiagram\nactor "Admin" as Admin\npackage "Système" {\n  usecase "Gérer" as UC1\n}\nAdmin --> UC1',
-	draw: '// Mode dessin libre.',
+	mermaid: savedData.mermaid || 'graph TD\n  A[Start] --> B{Choice}\n  B -- Yes --> C[Success]\n  B -- No --> D[Error]',
+	plantuml: savedData.plantuml || 'usecaseDiagram\nactor "Admin" as Admin\npackage "System" {\n  usecase "Manage" as UC1\n}\nAdmin --> UC1',
+	draw: '// Free drawing mode.',
 };
 
 codeInput.value = examples.mermaid;
@@ -73,7 +73,7 @@ function saveToLocal() {
 	savedData.mermaid = examples.mermaid;
 	savedData.plantuml = examples.plantuml;
 	savedData.draw = examples.draw;
-	localStorage.setItem('vibeStudio_backup', JSON.stringify(savedData));
+	localStorage.setItem('diagramStudio_backup', JSON.stringify(savedData));
 }
 
 function log(msg, isError = true) {
@@ -226,7 +226,7 @@ scene.addEventListener(
 );
 
 function downloadImage() {
-	let fileName = (codeInput.value.match(/title\s+(.+)/i)?.[1] || 'diagramme').trim().replace(/\s+/g, '_');
+	let fileName = (codeInput.value.match(/title\s+(.+)/i)?.[1] || 'diagram').trim().replace(/\s+/g, '_');
 
 	if (currentMode === 'mermaid') {
 		const svgElement = mermaidDiv.querySelector('svg');
