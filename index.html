@@ -37,7 +37,7 @@
 					<button class="btn-download" onclick="downloadImage()">Télécharger l'image</button>
 				</div>
 			</div>
-
+			<div class="resizer"></div>
 			<div class="preview-side" id="preview-side">
 				<div id="draw-toolbar" style="display: none; padding: 10px; background: #f0f0f0; border-bottom: 1px solid #ccc;">
 					<div style="display: flex; gap: 10px; align-items: center;">
@@ -71,7 +71,7 @@
 				<div class="zoom-panel">
 					<button onclick="changeZoom(-0.1)" title="Zoom arrière">−</button>
 					<div class="zoom-slider-container">
-						<input type="range" id="zoom-slider" min="0.2" max="3" step="0.1" value="1" oninput="updateZoom(this.value)" />
+						<input type="range" id="zoom-slider" min="0.2" max="10" step="0.1" value="1" oninput="updateZoom(this.value)" />
 					</div>
 					<button onclick="changeZoom(0.1)" title="Zoom avant">+</button>
 					<span id="zoom-value">100%</span>

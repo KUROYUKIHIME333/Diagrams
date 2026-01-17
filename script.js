@@ -150,7 +150,7 @@ function updateZoom(val) {
 }
 
 function changeZoom(delta) {
-	let newZoom = Math.min(Math.max(currentZoom + delta, 0.2), 3);
+	let newZoom = Math.min(Math.max(currentZoom + delta, 0.2), 10);
 	updateZoom(newZoom);
 }
 
@@ -429,6 +429,37 @@ function drawPolygon(sides, centerX, centerY, radius) {
 }
 
 window.onload = render;
+
+// Resizing functionality
+const resizer = document.querySelector('.resizer');
+let isResizing = false;
+
+resizer.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    document.body.style.cursor = window.innerWidth > 768 ? 'ew-resize' : 'ns-resize';
+    e.preventDefault();
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+    if (window.innerWidth > 768) {
+        // Desktop: resize width
+        const newWidth = (e.clientX / window.innerWidth) * 100;
+        const clamped = Math.min(50, Math.max(25, newWidth));
+        document.querySelector('.editor-side').style.width = clamped + 'vw';
+    } else {
+        // Mobile: resize height
+        const newHeight = (e.clientY / window.innerHeight) * 100;
+        const clamped = Math.min(45, Math.max(20, newHeight));
+        document.querySelector('.editor-side').style.height = clamped + 'vh';
+        document.querySelector('.preview-side').style.height = `calc(100vh - ${clamped}vh - 5px)`;
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    isResizing = false;
+    document.body.style.cursor = '';
+});
 
 // Drawing toolbar events
 document.getElementById('pencil-btn').addEventListener('click', () => setTool('pencil'));

@@ -32,11 +32,19 @@ header {
 }
 
 .editor-side {
-	width: 450px;
+	width: 35vw;
 	display: flex;
 	flex-direction: column;
 	border-right: 1px solid #ccc;
 	background: var(--panel);
+}
+
+.resizer {
+	width: 5px;
+	height: 100%;
+	background: #ccc;
+	cursor: ew-resize;
+	user-select: none;
 }
 
 .tabs {
@@ -308,12 +316,20 @@ img#plantuml-img,
 	}
 	.editor-side {
 		width: 100%;
-		height: 50vh;
+		height: 30vh;
 		border-right: none;
 		border-bottom: 1px solid #ccc;
+		min-height: 20vh;
+		max-height: 45vh;
+		overflow-y: auto;
+	}
+	.resizer {
+		width: 100%;
+		height: 5px;
+		cursor: ns-resize;
 	}
 	.preview-side {
-		height: 50vh;
+		height: calc(100vh - 30vh - 5px);
 	}
 	.scene {
 		margin: 5px;
