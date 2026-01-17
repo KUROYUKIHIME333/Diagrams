@@ -1,9 +1,36 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!doctype html>
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Studio Multi-Diagrammes (UML, Mermaid, PlantUML)</title>
+		<meta
+			name="description"
+			content="Diagram Studio is a free online tool to create and visualize professional diagrams using Mermaid, PlantUML, and free drawing. Supports UML diagrams, flowcharts, use cases, and more."
+		/>
+		<meta name="keywords" content="diagram, mermaid, plantuml, uml, flowchart, online tool, free drawing, diagram creator, visual schema" />
+		<meta name="author" content="KUROYUKIHIME333" />
+		<meta name="robots" content="index, follow" />
+		<meta property="og:title" content="Diagram Studio - Professional Diagram Creator" />
+		<meta property="og:description" content="Create stunning diagrams with Mermaid, PlantUML, and free drawing. Perfect for UML, flowcharts, and visual schemas." />
+		<meta property="og:type" content="website" />
+		<meta name="twitter:card" content="summary" />
+		<meta name="twitter:title" content="Diagram Studio - Professional Diagram Creator" />
+		<meta name="twitter:description" content="Create stunning diagrams with Mermaid, PlantUML, and free drawing." />
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "WebApplication",
+				"name": "Diagram Studio",
+				"description": "A static web application for creating and visualizing professional diagrams using Mermaid, PlantUML, and free drawing.",
+				"applicationCategory": "DeveloperApplication",
+				"operatingSystem": "Web Browser",
+				"author": {
+					"@type": "Person",
+					"name": "KUROYUKIHIME333"
+				}
+			}
+		</script>
+		<title>Diagram Studio - Create Professional Diagrams with Mermaid, PlantUML & Free Drawing</title>
 		<script src="mermaid.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 		<link rel="stylesheet" href="style.css" />
@@ -19,63 +46,63 @@
 				<div class="tabs">
 					<button class="tab-btn active" onclick="setMode('mermaid')">Mermaid</button>
 					<button class="tab-btn" onclick="setMode('plantuml')">PlantUML</button>
-					<button class="tab-btn" onclick="setMode('draw')">Dessin Libre</button>
+					<button class="tab-btn" onclick="setMode('draw')">Free Drawing</button>
 				</div>
 
-				<textarea id="code-input" spellcheck="false" placeholder="Saisissez votre code ici..."></textarea>
+				<textarea id="code-input" spellcheck="false" placeholder="Enter your code here..."></textarea>
 
 				<div id="error-log-container" class="collapsible">
 					<div id="error-log-header" onclick="toggleLog()">
-						<span>Console & Erreurs</span>
+						<span>Console & Errors</span>
 						<span id="error-indicator" class="indicator hidden">!</span>
 						<span class="toggle-icon">▼</span>
 					</div>
-					<div id="error-log-content" class="content">Prêt...</div>
+					<div id="error-log-content" class="content">Ready...</div>
 				</div>
 
 				<div class="controls">
-					<button class="btn-download" onclick="downloadImage()">Télécharger l'image</button>
+					<button class="btn-download" onclick="downloadImage()">Download Image</button>
 				</div>
 			</div>
 			<div class="resizer"></div>
 			<div class="preview-side" id="preview-side">
-				<div id="draw-toolbar" style="display: none; padding: 10px; background: #f0f0f0; border-bottom: 1px solid #ccc;">
-					<div style="display: flex; gap: 10px; align-items: center;">
-						<button id="pencil-btn" class="tool-btn active">Crayon</button>
-						<button id="eraser-btn" class="tool-btn">Gomme</button>
+				<div id="draw-toolbar" style="display: none; padding: 10px; background: #f0f0f0; border-bottom: 1px solid #ccc">
+					<div style="display: flex; gap: 10px; align-items: center">
+						<button id="pencil-btn" class="tool-btn active">Pencil</button>
+						<button id="eraser-btn" class="tool-btn">Eraser</button>
 						<select id="shape-select">
-							<option value="none">Forme</option>
-							<option value="square">Carré</option>
-							<option value="circle">Cercle</option>
+							<option value="none">Shape</option>
+							<option value="square">Square</option>
+							<option value="circle">Circle</option>
 							<option value="triangle">Triangle</option>
 							<option value="ellipse">Ellipse</option>
-							<option value="pentagon">Pentagone</option>
-							<option value="hexagon">Hexagone</option>
-							<option value="trapezoid">Trapèze</option>
+							<option value="pentagon">Pentagon</option>
+							<option value="hexagon">Hexagon</option>
+							<option value="trapezoid">Trapezoid</option>
 						</select>
-						<button id="clear-btn">Effacer tout</button>
+						<button id="clear-btn">Clear All</button>
 					</div>
-					<div id="color-palette" style="margin-top: 10px;">
-						<button class="color-btn" data-color="#000000" style="background: #000; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
-						<button class="color-btn" data-color="#FF0000" style="background: #F00; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
-						<button class="color-btn" data-color="#00FF00" style="background: #0F0; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
-						<button class="color-btn" data-color="#0000FF" style="background: #00F; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
-						<button class="color-btn" data-color="#FFFF00" style="background: #FF0; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
-						<button class="color-btn" data-color="#FF00FF" style="background: #F0F; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
-						<button class="color-btn" data-color="#00FFFF" style="background: #0FF; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
-						<button class="color-btn" data-color="#FFA500" style="background: #FFA500; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
-						<button class="color-btn" data-color="#800080" style="background: #800080; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
-						<button class="color-btn" data-color="#FFC0CB" style="background: #FFC0CB; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+					<div id="color-palette" style="margin-top: 10px">
+						<button class="color-btn" data-color="#000000" style="background: #000; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+						<button class="color-btn" data-color="#FF0000" style="background: #f00; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+						<button class="color-btn" data-color="#00FF00" style="background: #0f0; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+						<button class="color-btn" data-color="#0000FF" style="background: #00f; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+						<button class="color-btn" data-color="#FFFF00" style="background: #ff0; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+						<button class="color-btn" data-color="#FF00FF" style="background: #f0f; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+						<button class="color-btn" data-color="#00FFFF" style="background: #0ff; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+						<button class="color-btn" data-color="#FFA500" style="background: #ffa500; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+						<button class="color-btn" data-color="#800080" style="background: #800080; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+						<button class="color-btn" data-color="#FFC0CB" style="background: #ffc0cb; width: 20px; height: 20px; border: 1px solid #ccc"></button>
 					</div>
 				</div>
 				<div class="zoom-panel">
-					<button onclick="changeZoom(-0.1)" title="Zoom arrière">−</button>
+					<button onclick="changeZoom(-0.1)" title="Zoom out">−</button>
 					<div class="zoom-slider-container">
 						<input type="range" id="zoom-slider" min="0.2" max="10" step="0.1" value="1" oninput="updateZoom(this.value)" />
 					</div>
-					<button onclick="changeZoom(0.1)" title="Zoom avant">+</button>
+					<button onclick="changeZoom(0.1)" title="Zoom in">+</button>
 					<span id="zoom-value">100%</span>
-					<button onclick="resetView()" title="Réinitialiser la vue">Reset</button>
+					<button onclick="resetView()" title="Reset view">Reset</button>
 				</div>
 
 				<div class="scene" id="scene">
