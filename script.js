@@ -21,6 +21,7 @@ const logContainer = document.getElementById('error-log-container');
 
 // --- INITIALISATION & SAUVEGARDE ---
 const savedData = JSON.parse(localStorage.getItem('vibeStudio_backup')) || {};
+savedData.theme = savedData.theme || 'light';
 const examples = {
 	mermaid: savedData.mermaid || 'graph TD\n  A[Début] --> B{Choix}\n  B -- Oui --> C[Succès]\n  B -- Non --> D[Erreur]',
 	plantuml: savedData.plantuml || 'usecaseDiagram\nactor "Admin" as Admin\npackage "Système" {\n  usecase "Gérer" as UC1\n}\nAdmin --> UC1',
@@ -28,6 +29,9 @@ const examples = {
 };
 
 codeInput.value = examples.mermaid;
+if (savedData.theme === 'dark') codeInput.classList.add('dark-theme');
+document.getElementById('theme-btn').innerHTML = savedData.theme === 'dark' ? '🌙' : '☀️';
+document.getElementById('theme-btn').title = savedData.theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre';
 mermaid.initialize({ startOnLoad: false, suppressErrorRendering: true });
 
 codeInput.addEventListener('input', () => {
@@ -66,7 +70,19 @@ function setMode(mode) {
 
 function saveToLocal() {
 	examples[currentMode] = codeInput.value;
-	localStorage.setItem('vibeStudio_backup', JSON.stringify(examples));
+	savedData.mermaid = examples.mermaid;
+	savedData.plantuml = examples.plantuml;
+	savedData.draw = examples.draw;
+	localStorage.setItem('vibeStudio_backup', JSON.stringify(savedData));
+}
+
+function toggleTheme() {
+	codeInput.classList.toggle('dark-theme');
+	const isDark = codeInput.classList.contains('dark-theme');
+	savedData.theme = isDark ? 'dark' : 'light';
+	localStorage.setItem('vibeStudio_backup', JSON.stringify(savedData));
+	document.getElementById('theme-btn').innerHTML = isDark ? '🌙' : '☀️';
+	document.getElementById('theme-btn').title = isDark ? 'Passer en mode clair' : 'Passer en mode sombre';
 }
 
 // --- LOGS ET CONSOLE ---
