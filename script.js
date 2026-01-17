@@ -9,6 +9,10 @@ let lastPanY = 0;
 let imageWidth = 0;
 let imageHeight = 0;
 
+// Drawing variables
+let currentTool = 'pencil';
+let currentColor = '#000000';
+
 const codeInput = document.getElementById('code-input');
 const plantImg = document.getElementById('plantuml-img');
 const mermaidDiv = document.getElementById('mermaid-output');
@@ -20,7 +24,6 @@ const errorIndicator = document.getElementById('error-indicator');
 const logContainer = document.getElementById('error-log-container');
 
 const savedData = JSON.parse(localStorage.getItem('vibeStudio_backup')) || {};
-savedData.theme = savedData.theme || 'light';
 const examples = {
 	mermaid: savedData.mermaid || 'graph TD\n  A[Début] --> B{Choix}\n  B -- Oui --> C[Succès]\n  B -- Non --> D[Erreur]',
 	plantuml: savedData.plantuml || 'usecaseDiagram\nactor "Admin" as Admin\npackage "Système" {\n  usecase "Gérer" as UC1\n}\nAdmin --> UC1',
@@ -28,9 +31,6 @@ const examples = {
 };
 
 codeInput.value = examples.mermaid;
-if (savedData.theme === 'dark') codeInput.classList.add('dark-theme');
-document.getElementById('theme-btn').innerHTML = savedData.theme === 'dark' ? 'Sombre' : 'Clair';
-document.getElementById('theme-btn').title = savedData.theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre';
 mermaid.initialize({ startOnLoad: false, suppressErrorRendering: true });
 
 codeInput.addEventListener('input', () => {
@@ -58,6 +58,7 @@ function setMode(mode) {
 	mermaidDiv.style.display = mode === 'mermaid' ? 'block' : 'none';
 	plantImg.style.display = mode === 'plantuml' ? 'block' : 'none';
 	canvas.style.display = mode === 'draw' ? 'block' : 'none';
+	document.getElementById('draw-toolbar').style.display = mode === 'draw' ? 'block' : 'none';
 
 	if (mode === 'draw') {
 		resizeCanvas();
@@ -73,15 +74,6 @@ function saveToLocal() {
 	savedData.plantuml = examples.plantuml;
 	savedData.draw = examples.draw;
 	localStorage.setItem('vibeStudio_backup', JSON.stringify(savedData));
-}
-
-function toggleTheme() {
-	codeInput.classList.toggle('dark-theme');
-	const isDark = codeInput.classList.contains('dark-theme');
-	savedData.theme = isDark ? 'dark' : 'light';
-	localStorage.setItem('vibeStudio_backup', JSON.stringify(savedData));
-	document.getElementById('theme-btn').innerHTML = isDark ? 'Sombre' : 'Clair';
-	document.getElementById('theme-btn').title = isDark ? 'Passer en mode clair' : 'Passer en mode sombre';
 }
 
 function log(msg, isError = true) {
@@ -331,23 +323,135 @@ function resizeCanvas() {
 	const container = document.getElementById('preview-side');
 	canvas.width = 800;
 	canvas.height = 600;
-	ctx.strokeStyle = '#3498db';
+	ctx.strokeStyle = currentColor;
 	ctx.lineWidth = 2;
 	ctx.lineCap = 'round';
+	ctx.fillStyle = currentColor;
 }
+
 let drawing = false;
-canvas.onmousedown = () => (drawing = true);
-canvas.onmouseup = () => {
-	drawing = false;
-	ctx.beginPath();
-};
-canvas.onmousemove = (e) => {
+let startX, startY;
+
+canvas.addEventListener('mousedown', (e) => {
+	const rect = canvas.getBoundingClientRect();
+	startX = e.clientX - rect.left;
+	startY = e.clientY - rect.top;
+	drawing = true;
+	if (currentTool === 'pencil' || currentTool === 'eraser') {
+		ctx.beginPath();
+		ctx.moveTo(startX, startY);
+	}
+});
+
+canvas.addEventListener('mousemove', (e) => {
 	if (!drawing) return;
 	const rect = canvas.getBoundingClientRect();
-	ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-	ctx.stroke();
+	const x = e.clientX - rect.left;
+	const y = e.clientY - rect.top;
+	if (currentTool === 'pencil') {
+		ctx.strokeStyle = currentColor;
+		ctx.lineTo(x, y);
+		ctx.stroke();
+	} else if (currentTool === 'eraser') {
+		ctx.strokeStyle = '#FFFFFF';
+		ctx.lineTo(x, y);
+		ctx.stroke();
+	}
+});
+
+canvas.addEventListener('mouseup', (e) => {
+	if (!drawing) return;
+	drawing = false;
+	const rect = canvas.getBoundingClientRect();
+	const endX = e.clientX - rect.left;
+	const endY = e.clientY - rect.top;
+	if (['square', 'circle', 'triangle', 'ellipse', 'pentagon', 'hexagon', 'trapezoid'].includes(currentTool)) {
+		drawShape(currentTool, startX, startY, endX, endY);
+	}
 	ctx.beginPath();
-	ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-};
+});
+
+function drawShape(shape, x1, y1, x2, y2) {
+	const width = x2 - x1;
+	const height = y2 - y1;
+	ctx.strokeStyle = currentColor;
+	ctx.fillStyle = currentColor;
+	ctx.beginPath();
+	switch (shape) {
+		case 'square':
+			ctx.rect(x1, y1, width, height);
+			ctx.stroke();
+			break;
+		case 'circle':
+			const radius = Math.sqrt(width * width + height * height) / 2;
+			ctx.arc(x1 + width / 2, y1 + height / 2, radius, 0, 2 * Math.PI);
+			ctx.stroke();
+			break;
+		case 'triangle':
+			ctx.moveTo(x1 + width / 2, y1);
+			ctx.lineTo(x1, y2);
+			ctx.lineTo(x2, y2);
+			ctx.closePath();
+			ctx.stroke();
+			break;
+		case 'ellipse':
+			ctx.ellipse(x1 + width / 2, y1 + height / 2, Math.abs(width / 2), Math.abs(height / 2), 0, 0, 2 * Math.PI);
+			ctx.stroke();
+			break;
+		case 'pentagon':
+			drawPolygon(5, x1 + width / 2, y1 + height / 2, Math.min(Math.abs(width), Math.abs(height)) / 2);
+			break;
+		case 'hexagon':
+			drawPolygon(6, x1 + width / 2, y1 + height / 2, Math.min(Math.abs(width), Math.abs(height)) / 2);
+			break;
+		case 'trapezoid':
+			ctx.moveTo(x1 + width * 0.2, y1);
+			ctx.lineTo(x2 - width * 0.2, y1);
+			ctx.lineTo(x2, y2);
+			ctx.lineTo(x1, y2);
+			ctx.closePath();
+			ctx.stroke();
+			break;
+	}
+}
+
+function drawPolygon(sides, centerX, centerY, radius) {
+	ctx.beginPath();
+	for (let i = 0; i < sides; i++) {
+		const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
+		const x = centerX + radius * Math.cos(angle);
+		const y = centerY + radius * Math.sin(angle);
+		if (i === 0) ctx.moveTo(x, y);
+		else ctx.lineTo(x, y);
+	}
+	ctx.closePath();
+	ctx.stroke();
+}
 
 window.onload = render;
+
+// Drawing toolbar events
+document.getElementById('pencil-btn').addEventListener('click', () => setTool('pencil'));
+document.getElementById('eraser-btn').addEventListener('click', () => setTool('eraser'));
+document.getElementById('shape-select').addEventListener('change', (e) => setTool(e.target.value));
+document.getElementById('clear-btn').addEventListener('click', clearCanvas);
+document.querySelectorAll('.color-btn').forEach(btn => {
+	btn.addEventListener('click', (e) => {
+		currentColor = e.target.dataset.color;
+		document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+		e.target.classList.add('selected');
+	});
+});
+document.querySelector('.color-btn').classList.add('selected');
+
+function setTool(tool) {
+	currentTool = tool;
+	document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+	if (tool === 'pencil') document.getElementById('pencil-btn').classList.add('active');
+	else if (tool === 'eraser') document.getElementById('eraser-btn').classList.add('active');
+	document.getElementById('shape-select').value = tool === 'pencil' || tool === 'eraser' ? 'none' : tool;
+}
+
+function clearCanvas() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
