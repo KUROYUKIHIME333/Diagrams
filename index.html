@@ -35,11 +35,39 @@
 
 				<div class="controls">
 					<button class="btn-download" onclick="downloadImage()">Télécharger l'image</button>
-					<button id="theme-btn" onclick="toggleTheme()" title="Basculer thème">Clair</button>
 				</div>
 			</div>
 
 			<div class="preview-side" id="preview-side">
+				<div id="draw-toolbar" style="display: none; padding: 10px; background: #f0f0f0; border-bottom: 1px solid #ccc;">
+					<div style="display: flex; gap: 10px; align-items: center;">
+						<button id="pencil-btn" class="tool-btn active">Crayon</button>
+						<button id="eraser-btn" class="tool-btn">Gomme</button>
+						<select id="shape-select">
+							<option value="none">Forme</option>
+							<option value="square">Carré</option>
+							<option value="circle">Cercle</option>
+							<option value="triangle">Triangle</option>
+							<option value="ellipse">Ellipse</option>
+							<option value="pentagon">Pentagone</option>
+							<option value="hexagon">Hexagone</option>
+							<option value="trapezoid">Trapèze</option>
+						</select>
+						<button id="clear-btn">Effacer tout</button>
+					</div>
+					<div id="color-palette" style="margin-top: 10px;">
+						<button class="color-btn" data-color="#000000" style="background: #000; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+						<button class="color-btn" data-color="#FF0000" style="background: #F00; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+						<button class="color-btn" data-color="#00FF00" style="background: #0F0; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+						<button class="color-btn" data-color="#0000FF" style="background: #00F; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+						<button class="color-btn" data-color="#FFFF00" style="background: #FF0; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+						<button class="color-btn" data-color="#FF00FF" style="background: #F0F; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+						<button class="color-btn" data-color="#00FFFF" style="background: #0FF; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+						<button class="color-btn" data-color="#FFA500" style="background: #FFA500; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+						<button class="color-btn" data-color="#800080" style="background: #800080; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+						<button class="color-btn" data-color="#FFC0CB" style="background: #FFC0CB; width: 20px; height: 20px; border: 1px solid #ccc;"></button>
+					</div>
+				</div>
 				<div class="zoom-panel">
 					<button onclick="changeZoom(-0.1)" title="Zoom arrière">−</button>
 					<div class="zoom-slider-container">
