@@ -36,6 +36,16 @@ codeInput.addEventListener('input', () => {
 	timeout = setTimeout(render, 300);
 });
 
+codeInput.addEventListener('keydown', function (e) {
+	if (e.key === 'Tab') {
+		e.preventDefault();
+		const start = this.selectionStart;
+		const end = this.selectionEnd;
+		this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+		this.selectionStart = this.selectionEnd = start + 4;
+	}
+});
+
 function setMode(mode) {
 	saveToLocal();
 	currentMode = mode;
@@ -201,13 +211,17 @@ function endPan() {
 }
 
 // Zoom molette (Ctrl + Scroll) - sensibilité ajustée
-scene.addEventListener('wheel', (e) => {
-	if (e.ctrlKey) {
-		e.preventDefault();
-		const delta = e.deltaY > 0 ? -0.05 : 0.05; // Moins sensible
-		changeZoom(delta);
-	}
-}, { passive: false });
+scene.addEventListener(
+	'wheel',
+	(e) => {
+		if (e.ctrlKey) {
+			e.preventDefault();
+			const delta = e.deltaY > 0 ? -0.05 : 0.05; // Moins sensible
+			changeZoom(delta);
+		}
+	},
+	{ passive: false }
+);
 
 // --- TÉLÉCHARGEMENT ---
 function downloadImage() {
