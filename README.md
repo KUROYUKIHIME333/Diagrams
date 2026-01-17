@@ -13,17 +13,16 @@ Diagram Studio est une application web statique permettant de créer et visualis
 - **HTML5** : Structure de la page web.
 - **CSS3** : Mise en page responsive et styles modernes avec variables CSS.
 - **JavaScript** : Logique interactive, gestion des modes, sauvegarde localStorage, export d'images.
-- **Mermaid** : Bibliothèque JavaScript pour le rendu de diagrammes à partir de code texte.
+- **Mermaid** : Bibliothèque JavaScript locale pour le rendu de diagrammes à partir de code texte.
 - **PlantUML** : Service en ligne pour générer des diagrammes UML complexes (via API externe).
-- **Pako** : Bibliothèque de compression DEFLATE pour l'encodage des diagrammes PlantUML.
+- **Pako** : Bibliothèque de compression DEFLATE depuis CDN pour l'encodage des diagrammes PlantUML.
 
 ## Comment utiliser
-1. Ouvrez le fichier `index.html` dans un navigateur web moderne.
+1. Ouvrez le fichier `index.html` dans un navigateur web moderne (avec connexion internet pour PlantUML).
 2. Utilisez les onglets pour basculer entre **Mermaid**, **PlantUML** et **Dessin Libre**.
 3. En mode Mermaid ou PlantUML :
    - Saisissez votre code dans la zone de texte.
-   - Le rendu se met à jour automatiquement après 500ms d'inactivité.
-   - Cliquez sur "Générer le rendu" pour un rendu immédiat.
+   - Le rendu se met à jour automatiquement après 300ms d'inactivité.
 4. En mode Dessin Libre :
    - Dessinez directement sur le canvas avec la souris.
 5. Utilisez le bouton "Télécharger l'image" pour exporter votre diagramme en PNG.
@@ -32,10 +31,16 @@ Diagram Studio est une application web statique permettant de créer et visualis
 Vos codes Mermaid et PlantUML sont automatiquement sauvegardés dans le stockage local du navigateur (`localStorage`) et seront restaurés au prochain chargement.
 
 ## Structure des fichiers
-- `index.html` : Page principale HTML avec la structure de l'application et l'intégration des bibliothèques externes.
+- `index.html` : Page principale HTML avec la structure de l'application et l'intégration des bibliothèques (Mermaid locale, Pako depuis CDN).
 - `style.css` : Feuille de styles CSS pour l'apparence, la mise en page et le thème de l'application.
 - `script.js` : Code JavaScript pour la gestion des modes, le rendu des diagrammes, l'export d'images et la sauvegarde locale.
+- `mermaid.min.js` : Bibliothèque Mermaid pour le rendu local des diagrammes Mermaid.
 - `README.md` : Ce fichier, documentant le projet.
 
 ## Note sur la génération du code
 De l'intelligence artificielle a été utilisée pour générer certaines parties du code.
+
+## Dépannage
+- **Erreur "mermaid is not defined"** : Assurez-vous que `mermaid.min.js` est chargé correctement.
+- **Erreur de rendu PlantUML** : Vérifiez votre connexion internet, car PlantUML utilise un service en ligne.
+- **Diagrammes ne se mettent pas à jour** : Le rendu est automatique après 300ms d'inactivité dans la zone de texte.
