@@ -1,24 +1,27 @@
 # Diagram Studio
 
+**Outils en ligne**: [https://diagramstudio.pages.dev/](https://diagramstudio.pages.dev/)
+
 ## Description
 Diagram Studio est une application web statique permettant de créer et visualiser des diagrammes professionnels en utilisant trois technologies différentes : Mermaid, PlantUML, et dessin libre. C'est un outil personnel polyvalent pour concevoir des diagrammes UML, des graphiques, des cas d'usage et d'autres schémas visuels.
 
-## Fonctionnalités
-- **Zoom et Pan** : Zoomez avec Ctrl+molette (sensibilité ajustée) ou boutons. Panner en cliquant-glissant quand zoomé (>100%). La scène permet de se déplacer sur toute l'image sans perdre de parties. Bouton Reset pour revenir au centre.
-- **Console d'erreurs cachable** : La console peut être réduite ; un indicateur apparaît en cas d'erreur.
-- **Responsive** : Interface adaptée pour mobile et tablette, avec layout vertical sur petits écrans.
-- **Rendu automatique** : Les diagrammes se mettent à jour automatiquement au fur et à mesure de la saisie (débounce 300ms).
+## Features
+- **Zoom and Pan**: Zoom with Ctrl+wheel (adjusted sensitivity) or buttons. Pan by click-dragging when zoomed (>100%). The scene allows moving over the entire image without losing parts. Reset button to return to center.
+- **Collapsible Error Console**: The console can be minimized; an indicator appears in case of error.
+- **Responsive**: Interface adapted for mobile and tablet, with vertical layout on small screens.
+- **Automatic Rendering**: Diagrams update automatically as you type (debounce 300ms).
 
-## Technologies utilisées
-- **HTML5** : Structure de la page web.
-- **CSS3** : Mise en page responsive et styles modernes avec variables CSS.
-- **JavaScript** : Logique interactive, gestion des modes, sauvegarde localStorage, export d'images.
-- **Mermaid** : Bibliothèque JavaScript locale pour le rendu de diagrammes à partir de code texte.
-- **PlantUML** : Service en ligne pour générer des diagrammes UML complexes (via API externe).
-- **Pako** : Bibliothèque de compression DEFLATE depuis CDN pour l'encodage des diagrammes PlantUML.
+## Technologies Used
+- **HTML5**: Structure of the web page.
+- **CSS3**: Responsive layout and modern styles with CSS variables.
+- **JavaScript**: Interactive logic, mode management, localStorage saving, image export.
+- **Mermaid**: Local JavaScript library for rendering diagrams from text code.
+- **PlantUML**: Online service for generating complex UML diagrams (via external API).
+- **Pako**: DEFLATE compression library from CDN for PlantUML diagram encoding.
+- **Hosting**: Deployed on Cloudflare Pages for fast, global access.
 
 ## Comment utiliser
-1. Ouvrez le fichier `index.html` dans un navigateur web moderne (avec connexion internet pour PlantUML).
+1. Allez sur `https://diagramstudio.pages.dev/` dans un navigateur web.
 2. Utilisez les onglets pour basculer entre **Mermaid**, **PlantUML** et **Dessin Libre**.
 3. En mode Mermaid ou PlantUML :
    - Saisissez votre code dans la zone de texte.
@@ -37,8 +40,13 @@ Vos codes Mermaid et PlantUML sont automatiquement sauvegardés dans le stockage
 - `mermaid.min.js` : Bibliothèque Mermaid pour le rendu local des diagrammes Mermaid.
 - `README.md` : Ce fichier, documentant le projet.
 
-## Note sur la génération du code
-De l'intelligence artificielle a été utilisée pour générer certaines parties du code.
+## Online Version
+The application is hosted online at https://diagramstudio.pages.dev/ for easy access without downloading files.
+
+## Local Development
+To run locally:
+1. Clone this repository.
+2. Open `index.html` in a modern web browser (internet required for PlantUML).
 
 ## Dépannage
 - **Erreur "mermaid is not defined"** : Assurez-vous que `mermaid.min.js` est chargé correctement.
