@@ -70,16 +70,6 @@ textarea {
 	resize: none;
 }
 
-textarea.dark-theme {
-	background-color: #1e1e1e;
-	color: #d4d4d4;
-	border: 1px solid #3e3e42;
-}
-
-textarea.dark-theme::placeholder {
-	color: #888;
-}
-
 /* Console de Logs */
 #error-log-container {
 	height: 120px;
@@ -292,28 +282,26 @@ img#plantuml-img,
 	transform: translateY(-2px);
 }
 
-#theme-btn {
-	/* background: linear-gradient(135deg, #e2e8ec, #b3e1ff); */
-	background: #c4c3c3;
-	color: white;
-	border: none;
-	padding: 8px 12px;
-	border-radius: 8px;
+.tool-btn {
+	padding: 5px 10px;
+	border: 1px solid #ccc;
+	background: white;
 	cursor: pointer;
-	font-weight: 600;
-	box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-	transition: all 0.3s ease;
-	font-size: 16px;
 }
 
-#theme-btn:hover {
-	/* background: linear-gradient(135deg, #2980b9, #3498db); */
-	background: #9e9e9e;
-	box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
-	transform: translateY(-2px);
+.tool-btn.active {
+	background: #ddd;
 }
 
-/* Responsive Design */
+.color-btn {
+	border: none;
+	cursor: pointer;
+	margin: 0 2px;
+}
+
+.color-btn.selected {
+	border: 2px solid #000;
+}
 @media (max-width: 768px) {
 	.main-container {
 		flex-direction: column;
