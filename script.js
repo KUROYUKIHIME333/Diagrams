@@ -29,7 +29,7 @@ const examples = {
 
 codeInput.value = examples.mermaid;
 if (savedData.theme === 'dark') codeInput.classList.add('dark-theme');
-document.getElementById('theme-btn').innerHTML = savedData.theme === 'dark' ? '🌙' : '☀️';
+document.getElementById('theme-btn').innerHTML = savedData.theme === 'dark' ? 'Sombre' : 'Clair';
 document.getElementById('theme-btn').title = savedData.theme === 'dark' ? 'Passer en mode clair' : 'Passer en mode sombre';
 mermaid.initialize({ startOnLoad: false, suppressErrorRendering: true });
 
@@ -80,7 +80,7 @@ function toggleTheme() {
 	const isDark = codeInput.classList.contains('dark-theme');
 	savedData.theme = isDark ? 'dark' : 'light';
 	localStorage.setItem('vibeStudio_backup', JSON.stringify(savedData));
-	document.getElementById('theme-btn').innerHTML = isDark ? '🌙' : '☀️';
+	document.getElementById('theme-btn').innerHTML = isDark ? 'Sombre' : 'Clair';
 	document.getElementById('theme-btn').title = isDark ? 'Passer en mode clair' : 'Passer en mode sombre';
 }
 
