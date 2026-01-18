@@ -45,82 +45,82 @@
 		</header>
 
 		<main>
-		<div class="main-container">
-			<div class="editor-side">
-				<div class="tabs">
-					<button class="tab-btn active" onclick="setMode('mermaid')">Mermaid</button>
-					<button class="tab-btn" onclick="setMode('plantuml')">PlantUML</button>
-					<button class="tab-btn" onclick="setMode('draw')">Free Drawing</button>
-				</div>
-
-				<label for="code-input">Code Input</label>
-				<textarea id="code-input" spellcheck="false" placeholder="Enter your code here..."></textarea>
-
-				<div id="error-log-container" class="collapsible">
-					<div id="error-log-header" onclick="toggleLog()">
-						<span>Console & Errors</span>
-						<span id="error-indicator" class="indicator hidden">!</span>
-						<span class="toggle-icon">▼</span>
+			<div class="main-container">
+				<div class="editor-side">
+					<div class="tabs">
+						<button class="tab-btn active" onclick="setMode('mermaid')">Mermaid</button>
+						<button class="tab-btn" onclick="setMode('plantuml')">PlantUML</button>
+						<button class="tab-btn" onclick="setMode('draw')">Free Drawing</button>
 					</div>
-					<div id="error-log-content" class="content">Ready...</div>
-				</div>
 
-				<div class="controls">
-					<button class="btn-download" onclick="downloadImage()">Download Image</button>
+					<label for="code-input">Code Input</label>
+					<textarea id="code-input" spellcheck="false" placeholder="Enter your code here..."></textarea>
+
+					<div id="error-log-container" class="collapsible">
+						<div id="error-log-header" onclick="toggleLog()">
+							<span>Console & Errors</span>
+							<span id="error-indicator" class="indicator hidden">!</span>
+							<span class="toggle-icon">▼</span>
+						</div>
+						<div id="error-log-content" class="content">Ready...</div>
+					</div>
+
+					<div class="controls">
+						<button class="btn-download" onclick="downloadImage()">Download Image</button>
+					</div>
+				</div>
+				<div class="resizer"></div>
+				<div class="preview-side" id="preview-side">
+					<div id="draw-toolbar" style="display: none; padding: 10px; background: #f0f0f0; border-bottom: 1px solid #ccc">
+						<div style="display: flex; gap: 10px; align-items: center">
+							<button id="pencil-btn" class="tool-btn active">Pencil</button>
+							<button id="eraser-btn" class="tool-btn">Eraser</button>
+							<label for="shape-select">Shape</label>
+							<select id="shape-select">
+								<option value="none">Shape</option>
+								<option value="square">Square</option>
+								<option value="circle">Circle</option>
+								<option value="triangle">Triangle</option>
+								<option value="ellipse">Ellipse</option>
+								<option value="pentagon">Pentagon</option>
+								<option value="hexagon">Hexagon</option>
+								<option value="trapezoid">Trapezoid</option>
+							</select>
+							<button id="clear-btn">Clear All</button>
+						</div>
+						<div id="color-palette" style="margin-top: 10px">
+							<button class="color-btn" data-color="#000000" aria-label="Black" style="background: #000; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+							<button class="color-btn" data-color="#FF0000" aria-label="Red" style="background: #f00; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+							<button class="color-btn" data-color="#00FF00" aria-label="Green" style="background: #0f0; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+							<button class="color-btn" data-color="#0000FF" aria-label="Blue" style="background: #00f; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+							<button class="color-btn" data-color="#FFFF00" aria-label="Yellow" style="background: #ff0; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+							<button class="color-btn" data-color="#FF00FF" aria-label="Magenta" style="background: #f0f; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+							<button class="color-btn" data-color="#00FFFF" aria-label="Cyan" style="background: #0ff; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+							<button class="color-btn" data-color="#FFA500" aria-label="Orange" style="background: #ffa500; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+							<button class="color-btn" data-color="#800080" aria-label="Purple" style="background: #800080; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+							<button class="color-btn" data-color="#FFC0CB" aria-label="Pink" style="background: #ffc0cb; width: 20px; height: 20px; border: 1px solid #ccc"></button>
+						</div>
+					</div>
+					<div class="zoom-panel">
+						<button onclick="changeZoom(-0.1)" aria-label="Zoom out">−</button>
+						<div class="zoom-slider-container">
+							<label for="zoom-slider" style="position: absolute; left: -9999px">Zoom Level</label>
+							<input type="range" id="zoom-slider" min="0.2" max="10" step="0.1" value="1" oninput="updateZoom(this.value)" />
+						</div>
+						<button onclick="changeZoom(0.1)" aria-label="Zoom in">+</button>
+						<span id="zoom-value">100%</span>
+						<button onclick="resetView()" aria-label="Reset view">Reset</button>
+					</div>
+
+					<div class="scene" id="scene">
+						<div id="render-container">
+							<div id="mermaid-output" class="mermaid"></div>
+							<img id="plantuml-img" style="display: none" />
+							<canvas id="free-draw-canvas" style="display: none; border: 1px solid #000"></canvas>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="resizer"></div>
-			<div class="preview-side" id="preview-side">
-				<div id="draw-toolbar" style="display: none; padding: 10px; background: #f0f0f0; border-bottom: 1px solid #ccc">
-					<div style="display: flex; gap: 10px; align-items: center">
-						<button id="pencil-btn" class="tool-btn active">Pencil</button>
-						<button id="eraser-btn" class="tool-btn">Eraser</button>
-						<label for="shape-select">Shape</label>
-						<select id="shape-select">
-							<option value="none">Shape</option>
-							<option value="square">Square</option>
-							<option value="circle">Circle</option>
-							<option value="triangle">Triangle</option>
-							<option value="ellipse">Ellipse</option>
-							<option value="pentagon">Pentagon</option>
-							<option value="hexagon">Hexagon</option>
-							<option value="trapezoid">Trapezoid</option>
-						</select>
-						<button id="clear-btn">Clear All</button>
-					</div>
-					<div id="color-palette" style="margin-top: 10px">
-						<button class="color-btn" data-color="#000000" aria-label="Black" style="background: #000; width: 20px; height: 20px; border: 1px solid #ccc"></button>
-						<button class="color-btn" data-color="#FF0000" aria-label="Red" style="background: #f00; width: 20px; height: 20px; border: 1px solid #ccc"></button>
-						<button class="color-btn" data-color="#00FF00" aria-label="Green" style="background: #0f0; width: 20px; height: 20px; border: 1px solid #ccc"></button>
-						<button class="color-btn" data-color="#0000FF" aria-label="Blue" style="background: #00f; width: 20px; height: 20px; border: 1px solid #ccc"></button>
-						<button class="color-btn" data-color="#FFFF00" aria-label="Yellow" style="background: #ff0; width: 20px; height: 20px; border: 1px solid #ccc"></button>
-						<button class="color-btn" data-color="#FF00FF" aria-label="Magenta" style="background: #f0f; width: 20px; height: 20px; border: 1px solid #ccc"></button>
-						<button class="color-btn" data-color="#00FFFF" aria-label="Cyan" style="background: #0ff; width: 20px; height: 20px; border: 1px solid #ccc"></button>
-						<button class="color-btn" data-color="#FFA500" aria-label="Orange" style="background: #ffa500; width: 20px; height: 20px; border: 1px solid #ccc"></button>
-						<button class="color-btn" data-color="#800080" aria-label="Purple" style="background: #800080; width: 20px; height: 20px; border: 1px solid #ccc"></button>
-						<button class="color-btn" data-color="#FFC0CB" aria-label="Pink" style="background: #ffc0cb; width: 20px; height: 20px; border: 1px solid #ccc"></button>
-					</div>
-				</div>
-				<div class="zoom-panel">
-					<button onclick="changeZoom(-0.1)" aria-label="Zoom out">−</button>
-					<div class="zoom-slider-container">
-						<label for="zoom-slider" style="position: absolute; left: -9999px;">Zoom Level</label>
-						<input type="range" id="zoom-slider" min="0.2" max="10" step="0.1" value="1" oninput="updateZoom(this.value)" />
-					</div>
-					<button onclick="changeZoom(0.1)" aria-label="Zoom in">+</button>
-					<span id="zoom-value">100%</span>
-					<button onclick="resetView()" aria-label="Reset view">Reset</button>
-				</div>
-
-				<div class="scene" id="scene">
-					<div id="render-container">
-						<div id="mermaid-output" class="mermaid"></div>
-						<img id="plantuml-img" style="display: none" />
-						<canvas id="free-draw-canvas" style="display: none; border: 1px solid #000"></canvas>
-					</div>
-				</div>
-			</div>
-		</div>
 		</main>
 
 		<script src="script.js"></script>
