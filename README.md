@@ -39,6 +39,7 @@ Vos codes Mermaid et PlantUML sont automatiquement sauvegardés dans le stockage
 - `script.js` : Code JavaScript pour la gestion des modes, le rendu des diagrammes, l'export d'images et la sauvegarde locale.
 - `mermaid.min.js` : Bibliothèque Mermaid pour le rendu local des diagrammes Mermaid.
 - `sitemap.xml` : Fichier XML pour l'indexation par les moteurs de recherche, listant les URLs du site.
+- `robots.txt` : Fichier pour contrôler l'accès des robots d'indexation aux pages du site.
 - `README.md` : Ce fichier, documentant le projet.
 
 ## Version en ligne
