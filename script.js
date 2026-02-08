@@ -13,15 +13,15 @@ let imageHeight = 0;
 let currentTool = 'pencil';
 let currentColor = '#000000';
 
-const codeInput = document.getElementById('code-input');
-const plantImg = document.getElementById('plantuml-img');
-const mermaidDiv = document.getElementById('mermaid-output');
-const canvas = document.getElementById('free-draw-canvas');
+const codeInput = document.querySelector('#code-input');
+const plantImg = document.querySelector('#plantuml-img');
+const mermaidDiv = document.querySelector('#mermaid-output');
+const canvas = document.querySelector('#free-draw-canvas');
 const ctx = canvas.getContext('2d');
-const renderContainer = document.getElementById('render-container');
-const logContent = document.getElementById('error-log-content');
-const errorIndicator = document.getElementById('error-indicator');
-const logContainer = document.getElementById('error-log-container');
+const renderContainer = document.querySelector('#render-container');
+const logContent = document.querySelector('#error-log-content');
+const errorIndicator = document.querySelector('#error-indicator');
+const logContainer = document.querySelector('#error-log-container');
 
 const savedData = JSON.parse(localStorage.getItem('diagramStudio_backup')) || {};
 const examples = {
@@ -34,7 +34,7 @@ codeInput.value = examples.mermaid;
 mermaid.initialize({ startOnLoad: false, suppressErrorRendering: true });
 
 codeInput.addEventListener('input', () => {
-	document.getElementById('status').innerText = 'En cours...';
+	document.querySelector('#status').innerText = 'En cours...';
 	clearTimeout(timeout);
 	timeout = setTimeout(render, 300);
 });
@@ -58,7 +58,7 @@ function setMode(mode) {
 	mermaidDiv.style.display = mode === 'mermaid' ? 'block' : 'none';
 	plantImg.style.display = mode === 'plantuml' ? 'block' : 'none';
 	canvas.style.display = mode === 'draw' ? 'block' : 'none';
-	document.getElementById('draw-toolbar').style.display = mode === 'draw' ? 'block' : 'none';
+	document.querySelector('#draw-toolbar').style.display = mode === 'draw' ? 'block' : 'none';
 
 	if (mode === 'draw') {
 		resizeCanvas();
@@ -102,7 +102,7 @@ async function render() {
 		try {
 			const { svg } = await mermaid.render('m' + Math.floor(Math.random() * 1000), code);
 			mermaidDiv.innerHTML = svg;
-			document.getElementById('status').innerText = 'Mode: MERMAID (Prêt)';
+			document.querySelector('#status').innerText = 'Mode: MERMAID (Prêt)';
 			log('Rendu Mermaid réussi', false);
 			updateImageSize();
 			resetView(); // Reset view après rendu
@@ -118,7 +118,7 @@ async function render() {
 		plantImg.src = 'https://www.plantuml.com/plantuml/png/~1' + encoded;
 
 		plantImg.onload = () => {
-			document.getElementById('status').innerText = 'Mode: PLANTUML (Prêt)';
+			document.querySelector('#status').innerText = 'Mode: PLANTUML (Prêt)';
 			log('Rendu PlantUML réussi', false);
 			updateImageSize();
 			resetView(); // Reset view après rendu
@@ -145,8 +145,8 @@ function updateImageSize() {
 function updateZoom(val) {
 	currentZoom = parseFloat(val);
 	applyTransform();
-	document.getElementById('zoom-value').innerText = Math.round(currentZoom * 100) + '%';
-	document.getElementById('zoom-slider').value = currentZoom;
+	document.querySelector('#zoom-value').innerText = Math.round(currentZoom * 100) + '%';
+	document.querySelector('#zoom-slider').value = currentZoom;
 }
 
 function changeZoom(delta) {
@@ -159,15 +159,15 @@ function resetView() {
 	translateX = 0;
 	translateY = 0;
 	applyTransform();
-	document.getElementById('zoom-value').innerText = '100%';
-	document.getElementById('zoom-slider').value = 1;
+	document.querySelector('#zoom-value').innerText = '100%';
+	document.querySelector('#zoom-slider').value = 1;
 }
 
 function applyTransform() {
 	renderContainer.style.transform = `translate(-50%, -50%) scale(${currentZoom}) translate(${translateX}px, ${translateY}px)`;
 }
 
-const scene = document.getElementById('scene');
+const scene = document.querySelector('#scene');
 
 scene.addEventListener('mousedown', startPan);
 scene.addEventListener('mousemove', pan);
@@ -222,7 +222,7 @@ scene.addEventListener(
 			changeZoom(delta);
 		}
 	},
-	{ passive: false }
+	{ passive: false },
 );
 
 function downloadImage() {
@@ -320,7 +320,7 @@ function encode6bit(b) {
 
 // DESSIN
 function resizeCanvas() {
-	const container = document.getElementById('preview-side');
+	const container = document.querySelector('#preview-side');
 	canvas.width = 800;
 	canvas.height = 600;
 	ctx.strokeStyle = currentColor;
@@ -435,41 +435,41 @@ const resizer = document.querySelector('.resizer');
 let isResizing = false;
 
 resizer.addEventListener('mousedown', (e) => {
-    isResizing = true;
-    document.body.style.cursor = window.innerWidth > 768 ? 'ew-resize' : 'ns-resize';
-    e.preventDefault();
+	isResizing = true;
+	document.body.style.cursor = window.innerWidth > 768 ? 'ew-resize' : 'ns-resize';
+	e.preventDefault();
 });
 
 document.addEventListener('mousemove', (e) => {
-    if (!isResizing) return;
-    if (window.innerWidth > 768) {
-        // Desktop: resize width
-        const newWidth = (e.clientX / window.innerWidth) * 100;
-        const clamped = Math.min(50, Math.max(25, newWidth));
-        document.querySelector('.editor-side').style.width = clamped + 'vw';
-    } else {
-        // Mobile: resize height
-        const newHeight = (e.clientY / window.innerHeight) * 100;
-        const clamped = Math.min(45, Math.max(20, newHeight));
-        document.querySelector('.editor-side').style.height = clamped + 'vh';
-        document.querySelector('.preview-side').style.height = `calc(100vh - ${clamped}vh - 5px)`;
-    }
+	if (!isResizing) return;
+	if (window.innerWidth > 768) {
+		// Desktop: resize width
+		const newWidth = (e.clientX / window.innerWidth) * 100;
+		const clamped = Math.min(50, Math.max(25, newWidth));
+		document.querySelector('.editor-side').style.width = clamped + 'vw';
+	} else {
+		// Mobile: resize height
+		const newHeight = (e.clientY / window.innerHeight) * 100;
+		const clamped = Math.min(45, Math.max(20, newHeight));
+		document.querySelector('.editor-side').style.height = clamped + 'vh';
+		document.querySelector('.preview-side').style.height = `calc(100vh - ${clamped}vh - 5px)`;
+	}
 });
 
 document.addEventListener('mouseup', () => {
-    isResizing = false;
-    document.body.style.cursor = '';
+	isResizing = false;
+	document.body.style.cursor = '';
 });
 
 // Drawing toolbar events
-document.getElementById('pencil-btn').addEventListener('click', () => setTool('pencil'));
-document.getElementById('eraser-btn').addEventListener('click', () => setTool('eraser'));
-document.getElementById('shape-select').addEventListener('change', (e) => setTool(e.target.value));
-document.getElementById('clear-btn').addEventListener('click', clearCanvas);
-document.querySelectorAll('.color-btn').forEach(btn => {
+document.querySelector('#pencil-btn').addEventListener('click', () => setTool('pencil'));
+document.querySelector('#eraser-btn').addEventListener('click', () => setTool('eraser'));
+document.querySelector('#shape-select').addEventListener('change', (e) => setTool(e.target.value));
+document.querySelector('#clear-btn').addEventListener('click', clearCanvas);
+document.querySelectorAll('.color-btn').forEach((btn) => {
 	btn.addEventListener('click', (e) => {
 		currentColor = e.target.dataset.color;
-		document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+		document.querySelectorAll('.color-btn').forEach((b) => b.classList.remove('selected'));
 		e.target.classList.add('selected');
 	});
 });
@@ -477,12 +477,24 @@ document.querySelector('.color-btn').classList.add('selected');
 
 function setTool(tool) {
 	currentTool = tool;
-	document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-	if (tool === 'pencil') document.getElementById('pencil-btn').classList.add('active');
-	else if (tool === 'eraser') document.getElementById('eraser-btn').classList.add('active');
-	document.getElementById('shape-select').value = tool === 'pencil' || tool === 'eraser' ? 'none' : tool;
+	document.querySelectorAll('.tool-btn').forEach((b) => b.classList.remove('active'));
+	if (tool === 'pencil') document.querySelector('#pencil-btn').classList.add('active');
+	else if (tool === 'eraser') document.querySelector('#eraser-btn').classList.add('active');
+	document.querySelector('#shape-select').value = tool === 'pencil' || tool === 'eraser' ? 'none' : tool;
 }
 
 function clearCanvas() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function toggleEditorSide() {
+	const editorSide = document.querySelector('#editor-side-container');
+	const toggleButtonContent = document.querySelector('#toggleButton');
+	if (editorSide.style.display === 'none') {
+		toggleButtonContent.textContent = 'arrow_menu_close';
+		editorSide.style.display = 'block';
+	} else {
+		toggleButtonContent.textContent = 'arrow_menu_open';
+		editorSide.style.display = 'none';
+	}
 }
