@@ -68,6 +68,10 @@ header {
 	border-top: 3px solid var(--btn);
 }
 
+label[for='code-input'] {
+	display: none;
+}
+
 textarea {
 	height: 50%;
 	width: 100%;
