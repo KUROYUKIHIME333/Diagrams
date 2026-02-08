@@ -70,6 +70,7 @@ header {
 
 textarea {
 	height: 50%;
+	width: 100%;
 	flex: 1;
 	padding: 15px;
 	font-family: 'Consolas', monospace;
@@ -78,6 +79,8 @@ textarea {
 	font-size: 13px;
 	line-height: 1.5;
 	resize: none;
+	background-color: var(--accent);
+	color: white;
 }
 
 /* Console de Logs */
