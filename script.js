@@ -226,53 +226,85 @@ scene.addEventListener(
 );
 
 function downloadImage() {
+	// Good file name extraction with fallback
 	let fileName = (codeInput.value.match(/title\s+(.+)/i)?.[1] || 'diagram').trim().replace(/\s+/g, '_');
 
 	if (currentMode === 'mermaid') {
 		const svgElement = mermaidDiv.querySelector('svg');
 		if (!svgElement) return;
 
+		// 1. Cloning of original svg
 		const clonedSvg = svgElement.cloneNode(true);
 
-		const bBox = svgElement.getBBox(); // Vraies dimensions du contenu du diagramme
+		// 2. Cleaning to not be blocked , specially by Chrome
+		// We remove external references like polices or whatever
+		const styles = clonedSvg.querySelectorAll('style');
+		styles.forEach((style) => {
+			let content = style.textContent;
+			if (content.includes('@import') || content.includes('url(')) {
+				// we remove rules of external import
+				style.textContent = content.replace(/@import.*?["'].*?["'];/g, '');
+			}
+		});
+
+		// Polices by default
+		clonedSvg.style.fontFamily = 'Arial, sans-serif';
+
+		// exact dimensions
+		const bBox = svgElement.getBBox();
 		const padding = 20;
+		const width = bBox.width + padding * 2;
+		const height = bBox.height + padding * 2;
 
-		// Clone pour l'export en vraies dimensions
-		clonedSvg.setAttribute('viewBox', `${bBox.x - padding} ${bBox.y - padding} ${bBox.width + padding * 2} ${bBox.height + padding * 2}`);
-		clonedSvg.setAttribute('width', bBox.width + padding * 2);
-		clonedSvg.setAttribute('height', bBox.height + padding * 2);
+		clonedSvg.setAttribute('viewBox', `${bBox.x - padding} ${bBox.y - padding} ${width} ${height}`);
+		clonedSvg.setAttribute('width', width);
+		clonedSvg.setAttribute('height', height);
 
+		// Sérialisation XML sécurisée pour les caractères spéciaux (UML, flèches, etc.)
 		const svgData = new XMLSerializer().serializeToString(clonedSvg);
-		const img = new Image();
+		const svgBase64 = btoa(unescape(encodeURIComponent(svgData)));
 
-		const scaleFactor = 2; // Multiplicateur HD (2 = 2x la résolution)
+		const img = new Image();
+		const scaleFactor = 2; // HD
 
 		img.onload = function () {
 			const c = document.createElement('canvas');
 			const ctxExp = c.getContext('2d');
 
-			c.width = (bBox.width + padding * 2) * scaleFactor;
-			c.height = (bBox.height + padding * 2) * scaleFactor;
+			c.width = width * scaleFactor;
+			c.height = height * scaleFactor;
 
-			ctxExp.fillStyle = 'white'; // Fond blanc
+			// white background
+			ctxExp.fillStyle = 'white';
 			ctxExp.fillRect(0, 0, c.width, c.height);
 
 			ctxExp.scale(scaleFactor, scaleFactor);
-			ctxExp.drawImage(img, 0, 0);
 
-			c.toBlob((blob) => {
+			try {
+				ctxExp.drawImage(img, 0, 0);
+
+				c.toBlob((blob) => {
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = fileName + '_hd.png';
+					a.click();
+					setTimeout(() => URL.revokeObjectURL(url), 100);
+				}, 'image/png');
+			} catch (e) {
+				console.error('Erreur de sécurité Chrome : Tentative de fallback SVG', e);
+				// If canvas is bad, we get a svg only
+				const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+				const url = URL.createObjectURL(svgBlob);
 				const a = document.createElement('a');
-				a.href = URL.createObjectURL(blob);
-				a.download = fileName + '_hd.png';
+				a.href = url;
+				a.download = fileName + '.svg';
 				a.click();
-			}, 'image/png');
+			}
 		};
 
-		// Utilisation de blob pour éviter les erreurs de caractères spéciaux
-		const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-		img.src = URL.createObjectURL(svgBlob);
+		img.src = 'data:image/svg+xml;base64,' + svgBase64;
 	} else {
-		// Logique simplifiée pour PlantUML et Draw
 		const img = new Image();
 		img.crossOrigin = 'anonymous';
 		img.onload = function () {
@@ -280,17 +312,26 @@ function downloadImage() {
 			const ctxExp = c.getContext('2d');
 			c.width = img.width;
 			c.height = img.height;
+
 			ctxExp.fillStyle = 'white';
 			ctxExp.fillRect(0, 0, c.width, c.height);
 			ctxExp.drawImage(img, 0, 0);
+
 			c.toBlob((blob) => {
+				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
-				a.href = URL.createObjectURL(blob);
+				a.href = url;
 				a.download = fileName + '.png';
 				a.click();
+				setTimeout(() => URL.revokeObjectURL(url), 100);
 			}, 'image/png');
 		};
-		img.src = currentMode === 'plantuml' ? plantImg.src : canvas.toDataURL('image/png');
+
+		if (currentMode === 'plantuml') {
+			img.src = plantImg.src;
+		} else {
+			img.src = canvas.toDataURL('image/png');
+		}
 	}
 }
 
