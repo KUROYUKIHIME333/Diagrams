@@ -1,6 +1,6 @@
 # Diagram Studio
 
-**Outils en ligne**: [https://diagramstudio.pages.dev/](https://diagramstudio.pages.dev/)
+**Outils en ligne sur** [diagramstudio.pages.dev/](https://diagramstudio.pages.dev/)
 
 ## Description
 Diagram Studio est une application web statique permettant de créer et visualiser des diagrammes professionnels en utilisant trois technologies différentes : Mermaid, PlantUML, et dessin libre. C'est un outil personnel polyvalent pour concevoir des diagrammes UML, des graphiques, des cas d'usage et d'autres schémas visuels.

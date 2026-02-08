@@ -7,7 +7,10 @@
 			name="description"
 			content="Diagram Studio is a free online tool to create and visualize professional diagrams using Mermaid, PlantUML, and free drawing. Supports UML diagrams, flowcharts, use cases, and more."
 		/>
-		<meta name="keywords" content="diagram, mermaid, plantuml, uml, flowchart, online tool, free drawing, diagram creator, visual schema" />
+		<meta
+			name="keywords"
+			content="diagram, diagram studio, diagramStudio, UML tools, UML outils, dessiner, faire des diagrammes, diagram tools, mermaid, plantuml, uml, flowchart, online tool, free drawing, diagram creator, visual schema, logiciel de schéma, ERD tool, sequence diagram, architecture logicielle, text to diagram, diagram as code, BPMN, mindmap en ligne, conception graphique technique, workflow builder, organigramme entreprise, cartographie processus, alternative Visio, cloud architecture tool, database designer, schéma de base de données, network diagram, engineering tool, documentation logicielle, markdown diagram, d2 diagram, graphviz, éditeur de schémas, modeleur UML, diagramme de flux, process map"
+		/>
 		<meta name="author" content="KUROYUKIHIME333" />
 		<meta name="robots" content="index, follow" />
 		<meta property="og:title" content="Diagram Studio - Professional Diagram Creator" />
@@ -24,12 +27,18 @@
 				"description": "A static web application for creating and visualizing professional diagrams using Mermaid, PlantUML, and free drawing.",
 				"applicationCategory": "DeveloperApplication",
 				"operatingSystem": "Web Browser",
+				"offers": {
+					"@type": "Offer",
+					"price": "0",
+					"priceCurrency": "USD"
+				}
 				"author": {
 					"@type": "Person",
 					"name": "KUROYUKIHIME333"
 				}
 			}
 		</script>
+
 		<!-- Cloudflare Web Analytics -->
 		<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "9d0aa60dcd5543ab9f949d472fcc1004"}'></script>
 		<!-- End Cloudflare Web Analytics -->
@@ -37,6 +46,7 @@
 		<script src="mermaid.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 		<link rel="stylesheet" href="style.css" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 	</head>
 	<body>
 		<header>
@@ -45,7 +55,8 @@
 		</header>
 
 		<main class="main-container">
-			<div class="editor-side">
+			<button id="toggle-editor-side" onclick="toggleEditorSide()"><span id="toggleButton" class="material-symbols-outlined"> arrow_menu_close </span></button>
+			<div class="editor-side" id="editor-side-container">
 				<div class="tabs">
 					<button class="tab-btn active" onclick="setMode('mermaid')">Mermaid</button>
 					<button class="tab-btn" onclick="setMode('plantuml')">PlantUML</button>
