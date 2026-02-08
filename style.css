@@ -2,6 +2,7 @@
 	--bg: #f0f2f5;
 	--panel: #ffffff;
 	--accent: #2c3e50;
+	--shady: #a3a3a3;
 	--btn: #3498db;
 	--log-bg: #1e1e1e;
 }
@@ -68,6 +69,7 @@ header {
 }
 
 textarea {
+	height: 50%;
 	flex: 1;
 	padding: 15px;
 	font-family: 'Consolas', monospace;
@@ -310,18 +312,41 @@ img#plantuml-img,
 .color-btn.selected {
 	border: 2px solid #000;
 }
+
+#toggle-editor-side {
+	margin: 10px;
+	background: transparent;
+	border: 1px solid gainsboro;
+	cursor: pointer;
+}
+
+#toggle-editor-side:hover {
+	color: var(--btn);
+}
+
+#editor-side-container {
+	display: block;
+	transition: display 0.3s ease;
+}
+
 @media (max-width: 768px) {
 	.main-container {
 		flex-direction: column;
 	}
+	#toggle-editor-side span {
+		display: inline-block;
+		transform: rotate(90deg);
+	}
 	.editor-side {
 		width: 100%;
-		height: 30vh;
+		height: 90vh;
 		border-right: none;
 		border-bottom: 1px solid #ccc;
-		min-height: 20vh;
-		max-height: 45vh;
+
 		overflow-y: auto;
+	}
+	textarea {
+		height: 60%;
 	}
 	.resizer {
 		width: 100%;
