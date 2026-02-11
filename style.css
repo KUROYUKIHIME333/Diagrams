@@ -257,10 +257,21 @@ textarea {
 }
 
 img#plantuml-img,
+#mermaid-output {
+	display: inline-block;
+	background-color: white;
+	box-sizing: border-box;
+	overflow: hidden;
+	vertical-align: top;
+}
+
+/* Le SVG à l'intérieur */
 #mermaid-output svg {
-	background: white;
-	padding: 20px;
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	display: block;
+	width: 100% !important;
+	height: 100% !important;
+	margin: 0 !important;
+	shape-rendering: geometricPrecision;
 }
 
 .btn-primary {
@@ -282,7 +293,6 @@ img#plantuml-img,
 }
 
 .btn-download {
-	background: linear-gradient(135deg, #27ae60, #2ecc71);
 	color: white;
 	border: none;
 	padding: 10px 20px;
@@ -292,10 +302,21 @@ img#plantuml-img,
 	box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
 	transition: all 0.3s ease;
 }
+.btn-download-png {
+	background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+.btn-download-pdf {
+	background: linear-gradient(135deg, #ae2727, #cc2e2e);
+}
 
-.btn-download:hover {
+.btn-download-png:hover {
 	background: linear-gradient(135deg, #2ecc71, #27ae60);
 	box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
+	transform: translateY(-2px);
+}
+.btn-download-pdf:hover {
+	background: linear-gradient(135deg, #cc2e2e, #ae2727);
+	box-shadow: 0 6px 16px rgba(174, 39, 39, 0.4);
 	transform: translateY(-2px);
 }
 

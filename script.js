@@ -97,17 +97,44 @@ async function render() {
 
 	if (currentMode === 'mermaid') {
 		mermaidDiv.innerHTML = '';
+		// Nettoyage des IDs Mermaid pour éviter les collisions
 		document.querySelectorAll('[id^="dmermaid"]').forEach((el) => el.remove());
 
 		try {
+			// 1. Rendu du SVG
 			const { svg } = await mermaid.render('m' + Math.floor(Math.random() * 1000), code);
 			mermaidDiv.innerHTML = svg;
+
+			const svgElement = mermaidDiv.querySelector('svg');
+			if (svgElement) {
+				const padding = 5;
+
+				// 2. Mesure précise du contenu dessiné
+				// On utilise getBBox() car les dimensions width/height de Mermaid incluent souvent trop de vide
+				const bBox = svgElement.getBBox();
+
+				// 3. Application de la taille au conteneur (mermaidDiv)
+				const targetWidth = bBox.width + padding * 2;
+				const targetHeight = bBox.height + padding * 2;
+
+				mermaidDiv.style.width = `${targetWidth}px`;
+				mermaidDiv.style.height = `${targetHeight}px`;
+				mermaidDiv.style.padding = `${padding}px`;
+
+				// 4. Recadrage du SVG sur la zone dessinée
+				// On redéfinit la viewBox pour éliminer les marges inutiles du moteur Mermaid
+				svgElement.setAttribute('viewBox', `${bBox.x} ${bBox.y} ${bBox.width} ${bBox.height}`);
+			}
+
 			document.querySelector('#status').innerText = 'Mode: MERMAID (Prêt)';
 			log('Rendu Mermaid réussi', false);
 			updateImageSize();
-			resetView(); // Reset view après rendu
+			resetView();
 		} catch (e) {
 			log('Erreur Mermaid : ' + e.message);
+			// Reset en cas d'erreur
+			mermaidDiv.style.width = 'auto';
+			mermaidDiv.style.height = 'auto';
 		}
 	} else if (currentMode === 'plantuml') {
 		let cleanCode = code;
@@ -121,7 +148,7 @@ async function render() {
 			document.querySelector('#status').innerText = 'Mode: PLANTUML (Prêt)';
 			log('Rendu PlantUML réussi', false);
 			updateImageSize();
-			resetView(); // Reset view après rendu
+			resetView();
 		};
 		plantImg.onerror = () => log('Erreur de rendu PlantUML');
 	}
@@ -538,4 +565,67 @@ function toggleEditorSide() {
 		toggleButtonContent.textContent = 'arrow_menu_open';
 		editorSide.style.display = 'none';
 	}
+}
+
+async function downloadAsPDF() {
+	const { jsPDF } = window.jspdf;
+	let fileName = (codeInput.value.match(/title\s+(.+)/i)?.[1] || 'diagram').trim().replace(/\s+/g, '_');
+
+	// On commence par générer une image (PNG) du rendu actuel
+	let imgData;
+	let w, h;
+
+	if (currentMode === 'mermaid') {
+		const svgElement = mermaidDiv.querySelector('svg');
+		if (!svgElement) return;
+
+		const bBox = svgElement.getBBox();
+		const padding = 20;
+		w = bBox.width + padding * 2;
+		h = bBox.height + padding * 2;
+
+		// On utilise un canvas temporaire pour transformer le SVG en Image
+		const svgData = new XMLSerializer().serializeToString(svgElement);
+		const svgBase64 = btoa(unescape(encodeURIComponent(svgData)));
+		const img = new Image();
+
+		imgData = await new Promise((resolve) => {
+			img.onload = () => {
+				const c = document.createElement('canvas');
+				c.width = w * 2; // Qualité HD
+				c.height = h * 2;
+				const ctxExp = c.getContext('2d');
+				ctxExp.fillStyle = 'white';
+				ctxExp.fillRect(0, 0, c.width, c.height);
+				ctxExp.scale(2, 2);
+				ctxExp.drawImage(img, 0, 0);
+				resolve(c.toDataURL('image/png'));
+			};
+			img.src = 'data:image/svg+xml;base64,' + svgBase64;
+		});
+	} else {
+		// Pour PlantUML et le dessin libre
+		const source = currentMode === 'plantuml' ? plantImg : canvas;
+		w = source.naturalWidth || source.width;
+		h = source.naturalHeight || source.height;
+
+		const c = document.createElement('canvas');
+		c.width = w;
+		c.height = h;
+		const ctxExp = c.getContext('2d');
+		ctxExp.fillStyle = 'white';
+		ctxExp.fillRect(0, 0, c.width, c.height);
+
+		// Si c'est PlantUML, on attend que l'image soit chargée (normalement déjà fait)
+		ctxExp.drawImage(source, 0, 0);
+		imgData = c.toDataURL('image/png');
+	}
+
+	// Création du PDF
+	const orientation = w > h ? 'l' : 'p';
+	const pdf = new jsPDF(orientation, 'px', [w, h]);
+
+	pdf.addImage(imgData, 'PNG', 0, 0, w, h);
+	pdf.save(fileName + '.pdf');
+	log('Export PDF réussi', false);
 }

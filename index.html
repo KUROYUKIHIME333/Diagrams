@@ -44,6 +44,7 @@
 		<!-- End Cloudflare Web Analytics -->
 		<title>Diagram Studio - Create Professional Diagrams with Mermaid, PlantUML & Free Drawing</title>
 		<script src="mermaid.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 		<link rel="stylesheet" href="style.css" />
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -76,7 +77,8 @@
 				</div>
 
 				<div class="controls">
-					<button class="btn-download" onclick="downloadImage()">Download Image</button>
+					<button class="btn-download btn-download-png" onclick="downloadImage()">Download Image</button>
+					<button class="btn-download btn-download-pdf" onclick="downloadAsPDF()">Exporter en PDF</button>
 				</div>
 			</div>
 			<div class="resizer"></div>
